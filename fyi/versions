@@ -1,0 +1,78 @@
+File: semgrep-grammars/src/tree-sitter-sfapex/LICENSE
+Git repo name: tree-sitter-sfapex
+Latest commit in repo: 8a6608820d26e4912de0e6aeb1727e3a526cd0a2
+Last change in file:
+  commit a69484e0fc4f737c890ec18d94d07e5f1b6f29f4
+  Author: Anthony Heber <anthony.heber@gmail.com>
+  Date:   Wed Sep 28 20:01:40 2022 -0600
+  
+      Getting ready for initial release
+---
+File: semgrep-grammars/src/tree-sitter-sfapex/sosl/grammar.js
+Git repo name: tree-sitter-sfapex
+Latest commit in repo: 8a6608820d26e4912de0e6aeb1727e3a526cd0a2
+Last change in file:
+  commit 9c6c6298cd5dd52227007ed15ad2525f52afa3b6
+  Author: Anthony Heber <anthony.heber@gmail.com>
+  Date:   Wed Aug 24 12:52:05 2022 -0600
+  
+      Initial Commit - parse and highlight
+---
+File: semgrep-grammars/src/tree-sitter-sfapex/soql/grammar.js
+Git repo name: tree-sitter-sfapex
+Latest commit in repo: 8a6608820d26e4912de0e6aeb1727e3a526cd0a2
+Last change in file:
+  commit 9c6c6298cd5dd52227007ed15ad2525f52afa3b6
+  Author: Anthony Heber <anthony.heber@gmail.com>
+  Date:   Wed Aug 24 12:52:05 2022 -0600
+  
+      Initial Commit - parse and highlight
+---
+File: semgrep-grammars/src/tree-sitter-sfapex/apex/grammar.js
+Git repo name: tree-sitter-sfapex
+Latest commit in repo: 8a6608820d26e4912de0e6aeb1727e3a526cd0a2
+Last change in file:
+  commit b0dc3d3b3212d31fc222355ddc271af785bb4af6
+  Author: Anthony Heber <anthony.heber@gmail.com>
+  Date:   Sun Sep 25 15:25:51 2022 -0600
+  
+      Add tagging support
+      
+      added modifier tracking
+---
+File: semgrep-grammars/src/semgrep-sfapex/sosl/grammar.js
+Git repo name: ocaml-tree-sitter-semgrep
+Latest commit in repo: 2a938b1672db7bab096097aa80f4594aeca44dc9
+Last change in file:
+  commit 447163c709ac5cce8780c7ee4a873c69b533c167
+  Author: Martin Jambon <martin@r2c.dev>
+  Date:   Thu Oct 13 19:07:53 2022 -0700
+  
+      Set up Apex. It's a little complicated like for TypeScript/TSX because
+      the Apex grammar is uses two subgrammars SOSL and SOQL, each its own
+      test suite.
+---
+File: semgrep-grammars/src/semgrep-sfapex/soql/grammar.js
+Git repo name: ocaml-tree-sitter-semgrep
+Latest commit in repo: 2a938b1672db7bab096097aa80f4594aeca44dc9
+Last change in file:
+  commit 447163c709ac5cce8780c7ee4a873c69b533c167
+  Author: Martin Jambon <martin@r2c.dev>
+  Date:   Thu Oct 13 19:07:53 2022 -0700
+  
+      Set up Apex. It's a little complicated like for TypeScript/TSX because
+      the Apex grammar is uses two subgrammars SOSL and SOQL, each its own
+      test suite.
+---
+File: semgrep-grammars/src/semgrep-sfapex/apex/grammar.js
+Git repo name: ocaml-tree-sitter-semgrep
+Latest commit in repo: 2a938b1672db7bab096097aa80f4594aeca44dc9
+Last change in file:
+  commit 447163c709ac5cce8780c7ee4a873c69b533c167
+  Author: Martin Jambon <martin@r2c.dev>
+  Date:   Thu Oct 13 19:07:53 2022 -0700
+  
+      Set up Apex. It's a little complicated like for TypeScript/TSX because
+      the Apex grammar is uses two subgrammars SOSL and SOQL, each its own
+      test suite.
+---
