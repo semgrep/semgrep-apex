@@ -8,665 +8,711 @@
 open! Sexplib.Conv
 open Tree_sitter_run
 
-type term = Token.t (* pattern "(\\\\\\'|[^'])+" *)
-[@@deriving sexp_of]
-
-type pat_stan = Token.t (* pattern [sS][tT][aA][nN][dD][aA][rR][dD] *)
+type pat_sum = Token.t (* pattern [sS][uU][mM] *)
 [@@deriving sexp_of]
 
 type date_time =
   Token.t (* pattern [1-4][0-9]{3}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-2]0|3[0-1])T([0-1]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d\d?\d?)?(?:Z|[+-][0-1]\d:[0-5]\d) *)
 [@@deriving sexp_of]
 
-type pat_day_in_week =
-  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][wW][eE][eE][kK] *)
-[@@deriving sexp_of]
-
-type pat_fiscal_quar =
-  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_switch = Token.t (* pattern [sS][wW][iI][tT][cC][hH] *)
-[@@deriving sexp_of]
-
-type pat_virt = Token.t (* pattern [vV][iI][rR][tT][uU][aA][lL] *)
-[@@deriving sexp_of]
-
-type pat_fiscal_month =
-  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][mM][oO][nN][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_system_mode =
-  Token.t (* pattern [sS][yY][sS][tT][eE][mM][__][mM][oO][dD][eE] *)
-[@@deriving sexp_of]
-
-type pat_first = Token.t (* pattern [fF][iI][rR][sS][tT] *)
-[@@deriving sexp_of]
-
-type pat_name = Token.t (* pattern [nN][aA][mM][eE] *)
-[@@deriving sexp_of]
-
-type date =
-  Token.t (* pattern [1-4][0-9]{3}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-2]0|3[0-1]) *)
-[@@deriving sexp_of]
-
-type pat_week_in_month =
-  Token.t (* pattern [wW][eE][eE][kK][__][iI][nN][__][mM][oO][nN][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_snip = Token.t (* pattern [sS][nN][iI][pP][pP][eE][tT] *)
-[@@deriving sexp_of]
-
-type pat_inhe = Token.t (* pattern [iI][nN][hH][eE][rR][iI][tT][eE][dD] *)
-[@@deriving sexp_of]
-
-type pat_mine = Token.t (* pattern [mM][iI][nN][eE] *)
-[@@deriving sexp_of]
-
-type pat_using = Token.t (* pattern [uU][sS][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_reco =
-  Token.t (* pattern [rR][eE][cC][oO][rR][dD][vV][iI][sS][iI][bB][iI][lL][iI][tT][yY][cC][oO][nN][tT][eE][xX][tT] *)
-[@@deriving sexp_of]
-
-type pat_next_quar =
-  Token.t (* pattern [nN][eE][xX][tT][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_trac = Token.t (* pattern [tT][rR][aA][cC][kK][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_or = Token.t (* pattern [oO][rR] *)
-[@@deriving sexp_of]
-
-type pat_tomo = Token.t (* pattern [tT][oO][mM][oO][rR][rR][oO][wW] *)
-[@@deriving sexp_of]
-
-type pat_this_fiscal_quar =
-  Token.t (* pattern [tT][hH][iI][sS][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_abst = Token.t (* pattern [aA][bB][sS][tT][rR][aA][cC][tT] *)
-[@@deriving sexp_of]
-
-type pat_inte = Token.t (* pattern [iI][nN][tT][eE][rR][fF][aA][cC][eE] *)
-[@@deriving sexp_of]
-
-type pat_min = Token.t (* pattern [mM][iI][nN] *)
-[@@deriving sexp_of]
-
-type pat_custom = Token.t (* pattern [cC][uU][sS][tT][oO][mM] *)
-[@@deriving sexp_of]
-
-type pat_on = Token.t (* pattern [oO][nN] *)
-[@@deriving sexp_of]
-
-type pat_last_week =
-  Token.t (* pattern [lL][aA][sS][tT][__][wW][eE][eE][kK] *)
-[@@deriving sexp_of]
-
-type pat_cale_year =
-  Token.t (* pattern [cC][aA][lL][eE][nN][dD][aA][rR][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_upsert = Token.t (* pattern [uU][pP][sS][eE][rR][tT] *)
-[@@deriving sexp_of]
-
-type pat_insert = Token.t (* pattern [iI][nN][sS][eE][rR][tT] *)
-[@@deriving sexp_of]
-
-type pat_spell_corr =
-  Token.t (* pattern [sS][pP][eE][lL][lL][__][cC][oO][rR][rR][eE][cC][tT][iI][oO][nN] *)
-[@@deriving sexp_of]
-
-type string_literal =
-  Token.t (* pattern "'(\\\\[nNrRtTbBfF\"'_%\\\\]|[^\\\\'])*'" *)
-[@@deriving sexp_of]
-
-type pat_desc = Token.t (* pattern [dD][eE][sS][cC] *)
-[@@deriving sexp_of]
-
-type pat_final = Token.t (* pattern [fF][iI][nN][aA][lL] *)
-[@@deriving sexp_of]
-
-type pat_fiscal_year =
-  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_while = Token.t (* pattern [wW][hH][iI][lL][eE] *)
-[@@deriving sexp_of]
-
-type pat_list = Token.t (* pattern [lL][iI][sS][tT][vV][iI][eE][wW] *)
-[@@deriving sexp_of]
-
-type pat_below = Token.t (* pattern [bB][eE][lL][oO][wW] *)
-[@@deriving sexp_of]
-
-type pat_select = Token.t (* pattern [sS][eE][lL][eE][cC][tT] *)
-[@@deriving sexp_of]
-
-type pat_suppos =
-  Token.t (* pattern [sS][uU][pP][pP][oO][rR][tT][sS][dD][oO][mM][aA][iI][nN][sS] *)
-[@@deriving sexp_of]
-
-type pat_test =
-  Token.t (* pattern [tT][eE][sS][tT][mM][eE][tT][hH][oO][dD] *)
-[@@deriving sexp_of]
-
-type pat_unde = Token.t (* pattern [uU][nN][dD][eE][lL][eE][tT][eE] *)
-[@@deriving sexp_of]
-
-type pat_last = Token.t (* pattern [lL][aA][sS][tT] *)
-[@@deriving sexp_of]
-
-type pat_my_team_terr =
-  Token.t (* pattern [mM][yY][__][tT][eE][aA][mM][__][tT][eE][rR][rR][iI][tT][oO][rR][yY] *)
-[@@deriving sexp_of]
-
-type decimal = Token.t (* pattern -?\d+(\.\d+)? *)
-[@@deriving sexp_of]
-
-type floating_point_type = [
-    `Float of Token.t (* "float" *)
-  | `Double of Token.t (* "double" *)
-]
-[@@deriving sexp_of]
-
-type pat_with_ = Token.t (* pattern [wW][iI][tT][hH][oO][uU][tT] *)
-[@@deriving sexp_of]
-
-type pat_rollup = Token.t (* pattern [rR][oO][lL][lL][uU][pP] *)
-[@@deriving sexp_of]
-
-type pat_yest = Token.t (* pattern [yY][eE][sS][tT][eE][rR][dD][aA][yY] *)
-[@@deriving sexp_of]
-
-type pat_with = Token.t (* pattern [wW][iI][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_this_week =
-  Token.t (* pattern [tT][hH][iI][sS][__][wW][eE][eE][kK] *)
-[@@deriving sexp_of]
-
-type pat_if = Token.t (* pattern [iI][fF] *)
-[@@deriving sexp_of]
-
-type pat_true = Token.t (* pattern [tT][rR][uU][eE] *)
-[@@deriving sexp_of]
-
-type pat_at = Token.t (* pattern [aA][tT] *)
-[@@deriving sexp_of]
-
-type pat_next_fiscal_year =
-  Token.t (* pattern [nN][eE][xX][tT][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_suppos_ =
-  Token.t (* pattern [sS][uU][pP][pP][oO][rR][tT][sS][dD][eE][lL][eE][gG][aA][tT][eE][sS] *)
-[@@deriving sexp_of]
-
-type pat_order = Token.t (* pattern [oO][rR][dD][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_mine_and_my_groups =
-  Token.t (* pattern [mM][iI][nN][eE][__][aA][nN][dD][__][mM][yY][__][gG][rR][oO][uU][pP][sS] *)
-[@@deriving sexp_of]
-
-type pat_my_terr =
-  Token.t (* pattern [mM][yY][__][tT][eE][rR][rR][iI][tT][oO][rR][yY] *)
-[@@deriving sexp_of]
-
-type pat_maxd =
-  Token.t (* pattern [mM][aA][xX][dD][eE][sS][cC][rR][iI][pP][tT][oO][rR][pP][eE][rR][rR][eE][cC][oO][rR][dD] *)
-[@@deriving sexp_of]
-
-type tok_choice_pat_last_n_days = Token.t
-[@@deriving sexp_of]
-
-type pat_nulls = Token.t (* pattern [nN][uU][lL][lL][sS] *)
-[@@deriving sexp_of]
-
-type pat_this = Token.t (* pattern [tT][hH][iI][sS] *)
-[@@deriving sexp_of]
-
-type pat_update = Token.t (* pattern [uU][pP][dD][aA][tT][eE] *)
-[@@deriving sexp_of]
-
-type pat_divi = Token.t (* pattern [dD][iI][vV][iI][sS][iI][oO][nN] *)
-[@@deriving sexp_of]
-
-type pat_delete = Token.t (* pattern [dD][eE][lL][eE][tT][eE] *)
-[@@deriving sexp_of]
-
-type pat_static = Token.t (* pattern [sS][tT][aA][tT][iI][cC] *)
-[@@deriving sexp_of]
-
-type pat_retu = Token.t (* pattern [rR][eE][tT][uU][rR][nN][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_ref = Token.t (* pattern [rR][eE][fF][eE][rR][eE][nN][cC][eE] *)
-[@@deriving sexp_of]
-
-type pat_last_fiscal_quar =
-  Token.t (* pattern [lL][aA][sS][tT][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type dimensions =
-  (Token.t (* "[" *) * Token.t (* "]" *)) list (* one or more *)
-[@@deriving sexp_of]
-
-type pat_userid = Token.t (* pattern [uU][sS][eE][rR][iI][dD] *)
-[@@deriving sexp_of]
-
-type pat_week_in_year =
-  Token.t (* pattern [wW][eE][eE][kK][__][iI][nN][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_next_90_days =
-  Token.t (* pattern [nN][eE][xX][tT][__][99][00][__][dD][aA][yY][sS] *)
-[@@deriving sexp_of]
-
-type pat_by = Token.t (* pattern [bB][yY] *)
-[@@deriving sexp_of]
-
-type line_comment_explicit = unit (* blank *)
-[@@deriving sexp_of]
-
-type pat_inclus = Token.t (* pattern [iI][nN][cC][lL][uU][dD][eE][sS] *)
-[@@deriving sexp_of]
-
-type pat_sum = Token.t (* pattern [sS][uU][mM] *)
-[@@deriving sexp_of]
-
-type pat_over = Token.t (* pattern [oO][vV][eE][rR][rR][iI][dD][eE] *)
-[@@deriving sexp_of]
-
-type pat_cont = Token.t (* pattern [cC][oO][nN][tT][iI][nN][uU][eE] *)
-[@@deriving sexp_of]
-
-type pat_brk = Token.t (* pattern [bB][rR][eE][aA][kK] *)
-[@@deriving sexp_of]
-
-type pat_enum = Token.t (* pattern [eE][nN][uU][mM] *)
-[@@deriving sexp_of]
-
-type pat_in = Token.t (* pattern [iI][nN] *)
-[@@deriving sexp_of]
-
-type pat_secu_enfo =
-  Token.t (* pattern [sS][eE][cC][uU][rR][iI][tT][yY][__][eE][nN][fF][oO][rR][cC][eE][dD] *)
-[@@deriving sexp_of]
-
-type pat_end = Token.t (* pattern [eE][nN][dD] *)
-[@@deriving sexp_of]
-
-type pat_where = Token.t (* pattern [wW][hH][eE][rR][eE] *)
-[@@deriving sexp_of]
-
-type pat_max = Token.t (* pattern [mM][aA][xX] *)
-[@@deriving sexp_of]
-
-type pat_next_week =
-  Token.t (* pattern [nN][eE][xX][tT][__][wW][eE][eE][kK] *)
-[@@deriving sexp_of]
-
-type pat_trig = Token.t (* pattern [tT][rR][iI][gG][gG][eE][rR] *)
-[@@deriving sexp_of]
-
-type block_comment_explicit = unit (* blank *)
-[@@deriving sexp_of]
-
-type pat_do = Token.t (* pattern [dD][oO] *)
-[@@deriving sexp_of]
-
-type pat_scope = Token.t (* pattern [sS][cC][oO][pP][eE] *)
-[@@deriving sexp_of]
-
-type pat_last_90_days =
-  Token.t (* pattern [lL][aA][sS][tT][__][99][00][__][dD][aA][yY][sS] *)
-[@@deriving sexp_of]
-
-type pat_side = Token.t (* pattern [sS][iI][dD][eE][bB][aA][rR] *)
-[@@deriving sexp_of]
-
-type decimal_floating_point_literal = Token.t
-[@@deriving sexp_of]
-
-type pat_last_month =
-  Token.t (* pattern [lL][aA][sS][tT][__][mM][oO][nN][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_from = Token.t (* pattern [fF][rR][oO][mM] *)
-[@@deriving sexp_of]
-
-type pat_prot = Token.t (* pattern [pP][rR][oO][tT][eE][cC][tT][eE][dD] *)
-[@@deriving sexp_of]
-
-type pat_last_quar =
-  Token.t (* pattern [lL][aA][sS][tT][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
 type pat_above = Token.t (* pattern [aA][bB][oO][vV][eE] *)
-[@@deriving sexp_of]
-
-type pat_this_year =
-  Token.t (* pattern [tT][hH][iI][sS][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_before = Token.t (* pattern [bB][eE][fF][oO][rR][eE] *)
-[@@deriving sexp_of]
-
-type pat_super = Token.t (* pattern [sS][uU][pP][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_for = Token.t (* pattern [fF][oO][rR] *)
-[@@deriving sexp_of]
-
-type pat_tran = Token.t (* pattern [tT][rR][aA][nN][sS][iI][eE][nN][tT] *)
-[@@deriving sexp_of]
-
-type currency_literal = Token.t (* pattern \w{3}\d+(\.\d+)? *)
-[@@deriving sexp_of]
-
-type pat_global = Token.t (* pattern [gG][lL][oO][bB][aA][lL] *)
 [@@deriving sexp_of]
 
 type pat_day_only = Token.t (* pattern [dD][aA][yY][__][oO][nN][lL][yY] *)
 [@@deriving sexp_of]
 
-type pat_like = Token.t (* pattern [lL][iI][kK][eE] *)
-[@@deriving sexp_of]
-
-type pat_e8c36c5 =
-  Token.t (* pattern [sS][yY][sS][tT][eE][mM][..][rR][uU][nN][aA][sS] *)
-[@@deriving sexp_of]
-
-type pat_all = Token.t (* pattern [aA][lL][lL] *)
-[@@deriving sexp_of]
-
-type pat_day_in_month =
-  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][mM][oO][nN][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_view = Token.t (* pattern [vV][iI][eE][wW] *)
-[@@deriving sexp_of]
-
-type pat_pric =
-  Token.t (* pattern [pP][rR][iI][cC][eE][bB][oO][oO][kK][iI][dD] *)
-[@@deriving sexp_of]
-
-type pat_find = Token.t (* pattern [fF][iI][nN][dD] *)
-[@@deriving sexp_of]
-
-type pat_try = Token.t (* pattern [tT][rR][yY] *)
-[@@deriving sexp_of]
-
-type pat_catch = Token.t (* pattern [cC][aA][tT][cC][hH] *)
-[@@deriving sexp_of]
-
-type pat_throw = Token.t (* pattern [tT][hH][rR][oO][wW] *)
-[@@deriving sexp_of]
-
-type pat_tola = Token.t (* pattern [tT][oO][lL][aA][bB][eE][lL] *)
-[@@deriving sexp_of]
-
-type pat_extends = Token.t (* pattern [eE][xX][tT][eE][nN][dD][sS] *)
-[@@deriving sexp_of]
-
-type pat_data = Token.t (* pattern [dD][aA][tT][aA] *)
-[@@deriving sexp_of]
-
-type pat_imples =
-  Token.t (* pattern [iI][mM][pP][lL][eE][mM][eE][nN][tT][sS] *)
-[@@deriving sexp_of]
-
-type pat_day_in_year =
-  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_last_fiscal_year =
-  Token.t (* pattern [lL][aA][sS][tT][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_cate = Token.t (* pattern [cC][aA][tT][eE][gG][oO][rR][yY] *)
-[@@deriving sexp_of]
-
-type pat_limit = Token.t (* pattern [lL][iI][mM][iI][tT] *)
-[@@deriving sexp_of]
-
-type pat_ever =
-  Token.t (* pattern [eE][vV][eE][rR][yY][tT][hH][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_geol =
-  Token.t (* pattern [gG][eE][oO][lL][oO][cC][aA][tT][iI][oO][nN] *)
+type pat_for = Token.t (* pattern [fF][oO][rR] *)
 [@@deriving sexp_of]
 
 type pat_target_len =
   Token.t (* pattern [tT][aA][rR][gG][eE][tT][__][lL][eE][nN][gG][tT][hH] *)
 [@@deriving sexp_of]
 
-type pat_public = Token.t (* pattern [pP][uU][bB][lL][iI][cC] *)
+type pat_week_in_month =
+  Token.t (* pattern [wW][eE][eE][kK][__][iI][nN][__][mM][oO][nN][tT][hH] *)
 [@@deriving sexp_of]
 
-type pat_cube = Token.t (* pattern [cC][uU][bB][eE] *)
+type pat_fiscal_year =
+  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
 [@@deriving sexp_of]
 
-type pat_this_month =
-  Token.t (* pattern [tT][hH][iI][sS][__][mM][oO][nN][tT][hH] *)
+type pat_team = Token.t (* pattern [tT][eE][aA][mM] *)
 [@@deriving sexp_of]
 
-type pat_and = Token.t (* pattern [aA][nN][dD] *)
+type pat_fiscal_quar =
+  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
 [@@deriving sexp_of]
 
-type pat_null = Token.t (* pattern [nN][uU][lL][lL] *)
+type pat_new = Token.t (* pattern [nN][eE][wW] *)
 [@@deriving sexp_of]
 
-type pat_fields = Token.t (* pattern [fF][iI][eE][lL][dD][sS] *)
-[@@deriving sexp_of]
-
-type pat_user_mode =
-  Token.t (* pattern [uU][sS][eE][rR][__][mM][oO][dD][eE] *)
-[@@deriving sexp_of]
-
-type pat_today = Token.t (* pattern [tT][oO][dD][aA][yY] *)
-[@@deriving sexp_of]
-
-type pat_void = Token.t (* pattern [vV][oO][iI][dD] *)
-[@@deriving sexp_of]
-
-type pat_format = Token.t (* pattern [fF][oO][rR][mM][aA][tT] *)
-[@@deriving sexp_of]
-
-type pat_netw = Token.t (* pattern [nN][eE][tT][wW][oO][rR][kK] *)
-[@@deriving sexp_of]
-
-type pat_else = Token.t (* pattern [eE][lL][sS][eE] *)
-[@@deriving sexp_of]
-
-type pat_typeof = Token.t (* pattern [tT][yY][pP][eE][oO][fF] *)
-[@@deriving sexp_of]
-
-type pat_cale_quar =
-  Token.t (* pattern [cC][aA][lL][eE][nN][dD][aA][rR][__][qQ][uU][aA][rR][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_after = Token.t (* pattern [aA][fF][tT][eE][rR] *)
-[@@deriving sexp_of]
-
-type pat_last_year =
-  Token.t (* pattern [lL][aA][sS][tT][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_get = Token.t (* pattern [gG][eE][tT] *)
-[@@deriving sexp_of]
-
-type pat_then = Token.t (* pattern [tT][hH][eE][nN] *)
-[@@deriving sexp_of]
-
-type pat_asc = Token.t (* pattern [aA][sS][cC] *)
-[@@deriving sexp_of]
-
-type pat_priv = Token.t (* pattern [pP][rR][iI][vV][aA][tT][eE] *)
-[@@deriving sexp_of]
-
-type pat_this_fiscal_year =
-  Token.t (* pattern [tT][hH][iI][sS][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
+type date =
+  Token.t (* pattern [1-4][0-9]{3}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-2]0|3[0-1]) *)
 [@@deriving sexp_of]
 
 type pat_when = Token.t (* pattern [wW][hH][eE][nN] *)
 [@@deriving sexp_of]
 
-type block_comment = Token.t
-[@@deriving sexp_of]
-
-type pat_not = Token.t (* pattern [nN][oO][tT] *)
-[@@deriving sexp_of]
-
-type pat_hour_in_day =
-  Token.t (* pattern [hH][oO][uU][rR][__][iI][nN][__][dD][aA][yY] *)
-[@@deriving sexp_of]
-
-type pat_next_year =
-  Token.t (* pattern [nN][eE][xX][tT][__][yY][eE][aA][rR] *)
-[@@deriving sexp_of]
-
-type pat_next_month =
-  Token.t (* pattern [nN][eE][xX][tT][__][mM][oO][nN][tT][hH] *)
-[@@deriving sexp_of]
-
-type pat_avg = Token.t (* pattern [aA][vV][gG] *)
-[@@deriving sexp_of]
-
-type pat_offset = Token.t (* pattern [oO][fF][fF][sS][eE][tT] *)
-[@@deriving sexp_of]
-
-type pat_group = Token.t (* pattern [gG][rR][oO][uU][pP] *)
-[@@deriving sexp_of]
-
-type pat_merge = Token.t (* pattern [mM][eE][rR][gG][eE] *)
-[@@deriving sexp_of]
-
-type pat_as = Token.t (* pattern [aA][sS] *)
-[@@deriving sexp_of]
-
-type pat_ret = Token.t (* pattern [rR][eE][tT][uU][rR][nN] *)
-[@@deriving sexp_of]
-
-type pat_count = Token.t (* pattern [cC][oO][uU][nN][tT] *)
-[@@deriving sexp_of]
-
-type pat_grou = Token.t (* pattern [gG][rR][oO][uU][pP][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_shar = Token.t (* pattern [sS][hH][aA][rR][iI][nN][gG] *)
-[@@deriving sexp_of]
-
-type pat_count_dist =
-  Token.t (* pattern [cC][oO][uU][nN][tT][__][dD][iI][sS][tT][iI][nN][cC][tT] *)
+type pat_stan = Token.t (* pattern [sS][tT][aA][nN][dD][aA][rR][dD] *)
 [@@deriving sexp_of]
 
 type pat_inst =
   Token.t (* pattern [iI][nN][sS][tT][aA][nN][cC][eE][oO][fF] *)
 [@@deriving sexp_of]
 
-type pat_meta = Token.t (* pattern [mM][eE][tT][aA][dD][aA][tT][aA] *)
-[@@deriving sexp_of]
-
-type pat_new = Token.t (* pattern [nN][eE][wW] *)
-[@@deriving sexp_of]
-
-type pat_class = Token.t (* pattern [cC][lL][aA][sS][sS] *)
-[@@deriving sexp_of]
-
-type pat_rows = Token.t (* pattern [rR][oO][wW][sS] *)
-[@@deriving sexp_of]
-
-type pat_above_or_below =
-  Token.t (* pattern [aA][bB][oO][vV][eE][__][oO][rR][__][bB][eE][lL][oO][wW] *)
-[@@deriving sexp_of]
-
-type pat_team = Token.t (* pattern [tT][eE][aA][mM] *)
+type pat_my_team_terr =
+  Token.t (* pattern [mM][yY][__][tT][eE][aA][mM][__][tT][eE][rR][rR][iI][tT][oO][rR][yY] *)
 [@@deriving sexp_of]
 
 type pat_view_ = Token.t (* pattern [vV][iI][eE][wW][sS][tT][aA][tT] *)
 [@@deriving sexp_of]
 
-type pat_conv =
-  Token.t (* pattern [cC][oO][nN][vV][eE][rR][tT][cC][uU][rR][rR][eE][nN][cC][yY] *)
+type pat_ret = Token.t (* pattern [rR][eE][tT][uU][rR][nN] *)
 [@@deriving sexp_of]
 
-type pat_email = Token.t (* pattern [eE][mM][aA][iI][lL] *)
+type pat_next_year =
+  Token.t (* pattern [nN][eE][xX][tT][__][yY][eE][aA][rR] *)
 [@@deriving sexp_of]
 
-type pat_false = Token.t (* pattern [fF][aA][lL][sS][eE] *)
+type pat_trig = Token.t (* pattern [tT][rR][iI][gG][gG][eE][rR] *)
 [@@deriving sexp_of]
 
-type pat_phone = Token.t (* pattern [pP][hH][oO][nN][eE] *)
+type pat_over = Token.t (* pattern [oO][vV][eE][rR][rR][iI][dD][eE] *)
 [@@deriving sexp_of]
 
-type pat_fina = Token.t (* pattern [fF][iI][nN][aA][lL][lL][yY] *)
+type pat_tran = Token.t (* pattern [tT][rR][aA][nN][sS][iI][eE][nN][tT] *)
 [@@deriving sexp_of]
 
-type pat_having = Token.t (* pattern [hH][aA][vV][iI][nN][gG] *)
+type string_literal =
+  Token.t (* pattern "'(\\\\[nNrRtTbBfFuU\"'_%\\\\]|[^\\\\'])*'" *)
+[@@deriving sexp_of]
+
+type pat_this_month =
+  Token.t (* pattern [tT][hH][iI][sS][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type pat_all = Token.t (* pattern [aA][lL][lL] *)
+[@@deriving sexp_of]
+
+type pat_last_90_days =
+  Token.t (* pattern [lL][aA][sS][tT][__][99][00][__][dD][aA][yY][sS] *)
+[@@deriving sexp_of]
+
+type pat_mine_and_my_groups =
+  Token.t (* pattern [mM][iI][nN][eE][__][aA][nN][dD][__][mM][yY][__][gG][rR][oO][uU][pP][sS] *)
+[@@deriving sexp_of]
+
+type pat_day_in_month =
+  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type pat_order = Token.t (* pattern [oO][rR][dD][eE][rR] *)
 [@@deriving sexp_of]
 
 type identifier = Token.t (* pattern [\p{L}_$][\p{L}\p{Nd}_$]* *)
 [@@deriving sexp_of]
 
-type int_ = Token.t
+type pat_like = Token.t (* pattern [lL][iI][kK][eE] *)
 [@@deriving sexp_of]
 
-type pat_exclus = Token.t (* pattern [eE][xX][cC][lL][uU][dD][eE][sS] *)
+type pat_cate = Token.t (* pattern [cC][aA][tT][eE][gG][oO][rR][yY] *)
 [@@deriving sexp_of]
 
-type pat_next_fiscal_quar =
-  Token.t (* pattern [nN][eE][xX][tT][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
+type pat_userid = Token.t (* pattern [uU][sS][eE][rR][iI][dD] *)
 [@@deriving sexp_of]
 
-type pat_this_quar =
-  Token.t (* pattern [tT][hH][iI][sS][__][qQ][uU][aA][rR][tT][eE][rR] *)
+type pat_inte = Token.t (* pattern [iI][nN][tT][eE][rR][fF][aA][cC][eE] *)
 [@@deriving sexp_of]
 
-type pat_high = Token.t (* pattern [hH][iI][gG][hH][lL][iI][gG][hH][tT] *)
+type pat_static = Token.t (* pattern [sS][tT][aA][tT][iI][cC] *)
 [@@deriving sexp_of]
 
-type integral_type = [
-    `Byte of Token.t (* "byte" *)
-  | `Short of Token.t (* "short" *)
-  | `Int of Token.t (* "int" *)
-  | `Long of Token.t (* "long" *)
-  | `Char of Token.t (* "char" *)
-]
+type term = Token.t (* pattern "(\\\\\\'|[^'])+" *)
+[@@deriving sexp_of]
+
+type pat_divi = Token.t (* pattern [dD][iI][vV][iI][sS][iI][oO][nN] *)
+[@@deriving sexp_of]
+
+type pat_first = Token.t (* pattern [fF][iI][rR][sS][tT] *)
+[@@deriving sexp_of]
+
+type pat_format = Token.t (* pattern [fF][oO][rR][mM][aA][tT] *)
+[@@deriving sexp_of]
+
+type pat_with_ = Token.t (* pattern [wW][iI][tT][hH][oO][uU][tT] *)
+[@@deriving sexp_of]
+
+type pat_maxd =
+  Token.t (* pattern [mM][aA][xX][dD][eE][sS][cC][rR][iI][pP][tT][oO][rR][pP][eE][rR][rR][eE][cC][oO][rR][dD] *)
+[@@deriving sexp_of]
+
+type pat_by = Token.t (* pattern [bB][yY] *)
+[@@deriving sexp_of]
+
+type pat_shar = Token.t (* pattern [sS][hH][aA][rR][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_switch = Token.t (* pattern [sS][wW][iI][tT][cC][hH] *)
+[@@deriving sexp_of]
+
+type pat_this = Token.t (* pattern [tT][hH][iI][sS] *)
+[@@deriving sexp_of]
+
+type pat_upsert = Token.t (* pattern [uU][pP][sS][eE][rR][tT] *)
+[@@deriving sexp_of]
+
+type pat_last_fiscal_quar =
+  Token.t (* pattern [lL][aA][sS][tT][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_name = Token.t (* pattern [nN][aA][mM][eE] *)
+[@@deriving sexp_of]
+
+type decimal = Token.t (* pattern -?\d+(\.\d+)? *)
 [@@deriving sexp_of]
 
 type property_navigation = (Token.t (* "?" *) option * Token.t (* "." *))
 [@@deriving sexp_of]
 
-type pat_set = Token.t (* pattern [sS][eE][tT] *)
+type pat_scope = Token.t (* pattern [sS][cC][oO][pP][eE] *)
+[@@deriving sexp_of]
+
+type pat_yest = Token.t (* pattern [yY][eE][sS][tT][eE][rR][dD][aA][yY] *)
+[@@deriving sexp_of]
+
+type pat_throw = Token.t (* pattern [tT][hH][rR][oO][wW] *)
+[@@deriving sexp_of]
+
+type pat_in = Token.t (* pattern [iI][nN] *)
+[@@deriving sexp_of]
+
+type pat_typeof = Token.t (* pattern [tT][yY][pP][eE][oO][fF] *)
+[@@deriving sexp_of]
+
+type pat_before = Token.t (* pattern [bB][eE][fF][oO][rR][eE] *)
+[@@deriving sexp_of]
+
+type pat_next_quar =
+  Token.t (* pattern [nN][eE][xX][tT][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_system_mode =
+  Token.t (* pattern [sS][yY][sS][tT][eE][mM][__][mM][oO][dD][eE] *)
+[@@deriving sexp_of]
+
+type pat_phone = Token.t (* pattern [pP][hH][oO][nN][eE] *)
+[@@deriving sexp_of]
+
+type pat_my_terr =
+  Token.t (* pattern [mM][yY][__][tT][eE][rR][rR][iI][tT][oO][rR][yY] *)
+[@@deriving sexp_of]
+
+type pat_netw = Token.t (* pattern [nN][eE][tT][wW][oO][rR][kK] *)
+[@@deriving sexp_of]
+
+type pat_meta = Token.t (* pattern [mM][eE][tT][aA][dD][aA][tT][aA] *)
+[@@deriving sexp_of]
+
+type pat_on = Token.t (* pattern [oO][nN] *)
+[@@deriving sexp_of]
+
+type pat_this_fiscal_year =
+  Token.t (* pattern [tT][hH][iI][sS][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_user_mode =
+  Token.t (* pattern [uU][sS][eE][rR][__][mM][oO][dD][eE] *)
+[@@deriving sexp_of]
+
+type pat_e8c36c5 =
+  Token.t (* pattern [sS][yY][sS][tT][eE][mM][..][rR][uU][nN][aA][sS] *)
+[@@deriving sexp_of]
+
+type pat_dist = Token.t (* pattern [dD][iI][sS][tT][aA][nN][cC][eE] *)
+[@@deriving sexp_of]
+
+type pat_super = Token.t (* pattern [sS][uU][pP][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_rows = Token.t (* pattern [rR][oO][wW][sS] *)
+[@@deriving sexp_of]
+
+type tok_choice_pat_last_n_days = Token.t
+[@@deriving sexp_of]
+
+type pat_retu = Token.t (* pattern [rR][eE][tT][uU][rR][nN][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_last_month =
+  Token.t (* pattern [lL][aA][sS][tT][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type dimensions =
+  (Token.t (* "[" *) * Token.t (* "]" *)) list (* one or more *)
+[@@deriving sexp_of]
+
+type pat_view = Token.t (* pattern [vV][iI][eE][wW] *)
+[@@deriving sexp_of]
+
+type pat_where = Token.t (* pattern [wW][hH][eE][rR][eE] *)
+[@@deriving sexp_of]
+
+type pat_next_fiscal_year =
+  Token.t (* pattern [nN][eE][xX][tT][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_cale_quar =
+  Token.t (* pattern [cC][aA][lL][eE][nN][dD][aA][rR][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_insert = Token.t (* pattern [iI][nN][sS][eE][rR][tT] *)
+[@@deriving sexp_of]
+
+type pat_suppos =
+  Token.t (* pattern [sS][uU][pP][pP][oO][rR][tT][sS][dD][oO][mM][aA][iI][nN][sS] *)
+[@@deriving sexp_of]
+
+type pat_pric =
+  Token.t (* pattern [pP][rR][iI][cC][eE][bB][oO][oO][kK][iI][dD] *)
+[@@deriving sexp_of]
+
+type pat_count = Token.t (* pattern [cC][oO][uU][nN][tT] *)
 [@@deriving sexp_of]
 
 type pat_cale_month =
   Token.t (* pattern [cC][aA][lL][eE][nN][dD][aA][rR][__][mM][oO][nN][tT][hH] *)
 [@@deriving sexp_of]
 
+type pat_exclus = Token.t (* pattern [eE][xX][cC][lL][uU][dD][eE][sS] *)
+[@@deriving sexp_of]
+
+type pat_inhe = Token.t (* pattern [iI][nN][hH][eE][rR][iI][tT][eE][dD] *)
+[@@deriving sexp_of]
+
+type pat_set = Token.t (* pattern [sS][eE][tT] *)
+[@@deriving sexp_of]
+
+type pat_ever =
+  Token.t (* pattern [eE][vV][eE][rR][yY][tT][hH][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_with = Token.t (* pattern [wW][iI][tT][hH] *)
+[@@deriving sexp_of]
+
+type pat_merge = Token.t (* pattern [mM][eE][rR][gG][eE] *)
+[@@deriving sexp_of]
+
+type pat_not = Token.t (* pattern [nN][oO][tT] *)
+[@@deriving sexp_of]
+
+type pat_try = Token.t (* pattern [tT][rR][yY] *)
+[@@deriving sexp_of]
+
+type block_comment_explicit = unit (* blank *)
+[@@deriving sexp_of]
+
+type pat_else = Token.t (* pattern [eE][lL][sS][eE] *)
+[@@deriving sexp_of]
+
+type pat_select = Token.t (* pattern [sS][eE][lL][eE][cC][tT] *)
+[@@deriving sexp_of]
+
+type pat_last_fiscal_year =
+  Token.t (* pattern [lL][aA][sS][tT][__][fF][iI][sS][cC][aA][lL][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_spell_corr =
+  Token.t (* pattern [sS][pP][eE][lL][lL][__][cC][oO][rR][rR][eE][cC][tT][iI][oO][nN] *)
+[@@deriving sexp_of]
+
+type decimal_floating_point_literal = Token.t
+[@@deriving sexp_of]
+
+type pat_last_week =
+  Token.t (* pattern [lL][aA][sS][tT][__][wW][eE][eE][kK] *)
+[@@deriving sexp_of]
+
+type pat_get = Token.t (* pattern [gG][eE][tT] *)
+[@@deriving sexp_of]
+
+type pat_reco =
+  Token.t (* pattern [rR][eE][cC][oO][rR][dD][vV][iI][sS][iI][bB][iI][lL][iI][tT][yY][cC][oO][nN][tT][eE][xX][tT] *)
+[@@deriving sexp_of]
+
+type pat_last_year =
+  Token.t (* pattern [lL][aA][sS][tT][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_abst = Token.t (* pattern [aA][bB][sS][tT][rR][aA][cC][tT] *)
+[@@deriving sexp_of]
+
+type pat_today = Token.t (* pattern [tT][oO][dD][aA][yY] *)
+[@@deriving sexp_of]
+
+type pat_brk = Token.t (* pattern [bB][rR][eE][aA][kK] *)
+[@@deriving sexp_of]
+
+type pat_suppos_ =
+  Token.t (* pattern [sS][uU][pP][pP][oO][rR][tT][sS][dD][eE][lL][eE][gG][aA][tT][eE][sS] *)
+[@@deriving sexp_of]
+
+type pat_from = Token.t (* pattern [fF][rR][oO][mM] *)
+[@@deriving sexp_of]
+
+type pat_true = Token.t (* pattern [tT][rR][uU][eE] *)
+[@@deriving sexp_of]
+
+type currency_literal = Token.t (* pattern \w{3}\d+(\.\d+)? *)
+[@@deriving sexp_of]
+
+type pat_group = Token.t (* pattern [gG][rR][oO][uU][pP] *)
+[@@deriving sexp_of]
+
+type pat_delete = Token.t (* pattern [dD][eE][lL][eE][tT][eE] *)
+[@@deriving sexp_of]
+
+type pat_list = Token.t (* pattern [lL][iI][sS][tT][vV][iI][eE][wW] *)
+[@@deriving sexp_of]
+
+type pat_email = Token.t (* pattern [eE][mM][aA][iI][lL] *)
+[@@deriving sexp_of]
+
+type pat_as = Token.t (* pattern [aA][sS] *)
+[@@deriving sexp_of]
+
+type pat_day_in_year =
+  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_virt = Token.t (* pattern [vV][iI][rR][tT][uU][aA][lL] *)
+[@@deriving sexp_of]
+
+type pat_prot = Token.t (* pattern [pP][rR][oO][tT][eE][cC][tT][eE][dD] *)
+[@@deriving sexp_of]
+
+type pat_fiscal_month =
+  Token.t (* pattern [fF][iI][sS][cC][aA][lL][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type pat_unde = Token.t (* pattern [uU][nN][dD][eE][lL][eE][tT][eE] *)
+[@@deriving sexp_of]
+
+type pat_class = Token.t (* pattern [cC][lL][aA][sS][sS] *)
+[@@deriving sexp_of]
+
+type pat_tola = Token.t (* pattern [tT][oO][lL][aA][bB][eE][lL] *)
+[@@deriving sexp_of]
+
+type pat_trac = Token.t (* pattern [tT][rR][aA][cC][kK][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_fields = Token.t (* pattern [fF][iI][eE][lL][dD][sS] *)
+[@@deriving sexp_of]
+
+type pat_day_in_week =
+  Token.t (* pattern [dD][aA][yY][__][iI][nN][__][wW][eE][eE][kK] *)
+[@@deriving sexp_of]
+
+type pat_inclus = Token.t (* pattern [iI][nN][cC][lL][uU][dD][eE][sS] *)
+[@@deriving sexp_of]
+
 type pat_dele = Token.t (* pattern [dD][eE][lL][eE][gG][aA][tT][eE][dD] *)
+[@@deriving sexp_of]
+
+type pat_last_quar =
+  Token.t (* pattern [lL][aA][sS][tT][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_cont = Token.t (* pattern [cC][oO][nN][tT][iI][nN][uU][eE] *)
+[@@deriving sexp_of]
+
+type pat_max = Token.t (* pattern [mM][aA][xX] *)
+[@@deriving sexp_of]
+
+type pat_extends = Token.t (* pattern [eE][xX][tT][eE][nN][dD][sS] *)
+[@@deriving sexp_of]
+
+type pat_global = Token.t (* pattern [gG][lL][oO][bB][aA][lL] *)
+[@@deriving sexp_of]
+
+type pat_test =
+  Token.t (* pattern [tT][eE][sS][tT][mM][eE][tT][hH][oO][dD] *)
+[@@deriving sexp_of]
+
+type pat_ref = Token.t (* pattern [rR][eE][fF][eE][rR][eE][nN][cC][eE] *)
+[@@deriving sexp_of]
+
+type pat_data = Token.t (* pattern [dD][aA][tT][aA] *)
+[@@deriving sexp_of]
+
+type pat_this_week =
+  Token.t (* pattern [tT][hH][iI][sS][__][wW][eE][eE][kK] *)
+[@@deriving sexp_of]
+
+type pat_asc = Token.t (* pattern [aA][sS][cC] *)
+[@@deriving sexp_of]
+
+type pat_offset = Token.t (* pattern [oO][fF][fF][sS][eE][tT] *)
+[@@deriving sexp_of]
+
+type pat_final = Token.t (* pattern [fF][iI][nN][aA][lL] *)
+[@@deriving sexp_of]
+
+type pat_using = Token.t (* pattern [uU][sS][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_tomo = Token.t (* pattern [tT][oO][mM][oO][rR][rR][oO][wW] *)
+[@@deriving sexp_of]
+
+type pat_week_in_year =
+  Token.t (* pattern [wW][eE][eE][kK][__][iI][nN][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_above_or_below =
+  Token.t (* pattern [aA][bB][oO][vV][eE][__][oO][rR][__][bB][eE][lL][oO][wW] *)
+[@@deriving sexp_of]
+
+type pat_geol =
+  Token.t (* pattern [gG][eE][oO][lL][oO][cC][aA][tT][iI][oO][nN] *)
+[@@deriving sexp_of]
+
+type pat_next_90_days =
+  Token.t (* pattern [nN][eE][xX][tT][__][99][00][__][dD][aA][yY][sS] *)
+[@@deriving sexp_of]
+
+type pat_end = Token.t (* pattern [eE][nN][dD] *)
+[@@deriving sexp_of]
+
+type int_ = Token.t
+[@@deriving sexp_of]
+
+type pat_update = Token.t (* pattern [uU][pP][dD][aA][tT][eE] *)
+[@@deriving sexp_of]
+
+type pat_catch = Token.t (* pattern [cC][aA][tT][cC][hH] *)
+[@@deriving sexp_of]
+
+type pat_and = Token.t (* pattern [aA][nN][dD] *)
+[@@deriving sexp_of]
+
+type pat_limit = Token.t (* pattern [lL][iI][mM][iI][tT] *)
+[@@deriving sexp_of]
+
+type pat_grou = Token.t (* pattern [gG][rR][oO][uU][pP][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_this_fiscal_quar =
+  Token.t (* pattern [tT][hH][iI][sS][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_avg = Token.t (* pattern [aA][vV][gG] *)
+[@@deriving sexp_of]
+
+type pat_public = Token.t (* pattern [pP][uU][bB][lL][iI][cC] *)
+[@@deriving sexp_of]
+
+type pat_this_quar =
+  Token.t (* pattern [tT][hH][iI][sS][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_while = Token.t (* pattern [wW][hH][iI][lL][eE] *)
+[@@deriving sexp_of]
+
+type block_comment = Token.t
+[@@deriving sexp_of]
+
+type pat_nulls = Token.t (* pattern [nN][uU][lL][lL][sS] *)
+[@@deriving sexp_of]
+
+type pat_imples =
+  Token.t (* pattern [iI][mM][pP][lL][eE][mM][eE][nN][tT][sS] *)
+[@@deriving sexp_of]
+
+type pat_null = Token.t (* pattern [nN][uU][lL][lL] *)
+[@@deriving sexp_of]
+
+type pat_next_week =
+  Token.t (* pattern [nN][eE][xX][tT][__][wW][eE][eE][kK] *)
+[@@deriving sexp_of]
+
+type pat_below = Token.t (* pattern [bB][eE][lL][oO][wW] *)
+[@@deriving sexp_of]
+
+type pat_or = Token.t (* pattern [oO][rR] *)
+[@@deriving sexp_of]
+
+type pat_high = Token.t (* pattern [hH][iI][gG][hH][lL][iI][gG][hH][tT] *)
+[@@deriving sexp_of]
+
+type pat_min = Token.t (* pattern [mM][iI][nN] *)
+[@@deriving sexp_of]
+
+type pat_at = Token.t (* pattern [aA][tT] *)
+[@@deriving sexp_of]
+
+type pat_rollup = Token.t (* pattern [rR][oO][lL][lL][uU][pP] *)
+[@@deriving sexp_of]
+
+type pat_cube = Token.t (* pattern [cC][uU][bB][eE] *)
+[@@deriving sexp_of]
+
+type pat_having = Token.t (* pattern [hH][aA][vV][iI][nN][gG] *)
+[@@deriving sexp_of]
+
+type pat_snip = Token.t (* pattern [sS][nN][iI][pP][pP][eE][tT] *)
+[@@deriving sexp_of]
+
+type pat_custom = Token.t (* pattern [cC][uU][sS][tT][oO][mM] *)
+[@@deriving sexp_of]
+
+type pat_last = Token.t (* pattern [lL][aA][sS][tT] *)
+[@@deriving sexp_of]
+
+type pat_mine = Token.t (* pattern [mM][iI][nN][eE] *)
+[@@deriving sexp_of]
+
+type pat_next_fiscal_quar =
+  Token.t (* pattern [nN][eE][xX][tT][__][fF][iI][sS][cC][aA][lL][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_conv =
+  Token.t (* pattern [cC][oO][nN][vV][eE][rR][tT][cC][uU][rR][rR][eE][nN][cC][yY] *)
+[@@deriving sexp_of]
+
+type pat_secu_enfo =
+  Token.t (* pattern [sS][eE][cC][uU][rR][iI][tT][yY][__][eE][nN][fF][oO][rR][cC][eE][dD] *)
+[@@deriving sexp_of]
+
+type pat_after = Token.t (* pattern [aA][fF][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type pat_then = Token.t (* pattern [tT][hH][eE][nN] *)
+[@@deriving sexp_of]
+
+type pat_void = Token.t (* pattern [vV][oO][iI][dD] *)
+[@@deriving sexp_of]
+
+type pat_count_dist =
+  Token.t (* pattern [cC][oO][uU][nN][tT][__][dD][iI][sS][tT][iI][nN][cC][tT] *)
+[@@deriving sexp_of]
+
+type pat_enum = Token.t (* pattern [eE][nN][uU][mM] *)
+[@@deriving sexp_of]
+
+type pat_fina = Token.t (* pattern [fF][iI][nN][aA][lL][lL][yY] *)
+[@@deriving sexp_of]
+
+type pat_priv = Token.t (* pattern [pP][rR][iI][vV][aA][tT][eE] *)
+[@@deriving sexp_of]
+
+type pat_find = Token.t (* pattern [fF][iI][nN][dD] *)
+[@@deriving sexp_of]
+
+type pat_hour_in_day =
+  Token.t (* pattern [hH][oO][uU][rR][__][iI][nN][__][dD][aA][yY] *)
 [@@deriving sexp_of]
 
 type line_comment = Token.t
 [@@deriving sexp_of]
 
-type pat_dist = Token.t (* pattern [dD][iI][sS][tT][aA][nN][cC][eE] *)
+type pat_false = Token.t (* pattern [fF][aA][lL][sS][eE] *)
 [@@deriving sexp_of]
 
-type order_null_direciton = [
-    `Pat_nulls_pat_first of (pat_nulls * pat_first)
-  | `Pat_nulls_pat_last of (pat_nulls * pat_last)
+type pat_next_month =
+  Token.t (* pattern [nN][eE][xX][tT][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type pat_this_year =
+  Token.t (* pattern [tT][hH][iI][sS][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_if = Token.t (* pattern [iI][fF] *)
+[@@deriving sexp_of]
+
+type line_comment_explicit = unit (* blank *)
+[@@deriving sexp_of]
+
+type pat_side = Token.t (* pattern [sS][iI][dD][eE][bB][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_cale_year =
+  Token.t (* pattern [cC][aA][lL][eE][nN][dD][aA][rR][__][yY][eE][aA][rR] *)
+[@@deriving sexp_of]
+
+type pat_desc = Token.t (* pattern [dD][eE][sS][cC] *)
+[@@deriving sexp_of]
+
+type pat_do = Token.t (* pattern [dD][oO] *)
+[@@deriving sexp_of]
+
+type inferred_parameters = (
+    Token.t (* "(" *)
+  * identifier (*tok*)
+  * (Token.t (* "," *) * identifier (*tok*)) list (* zero or more *)
+  * Token.t (* ")" *)
+)
+[@@deriving sexp_of]
+
+type name = [
+    `Id of identifier (*tok*)
+  | `Scoped_id of (name * Token.t (* "." *) * identifier (*tok*))
+]
+[@@deriving sexp_of]
+
+type dotted_identifier = (
+    identifier (*tok*)
+  * (Token.t (* "." *) * identifier (*tok*)) list (* one or more *)
+)
+[@@deriving sexp_of]
+
+type value_comparison_operator = [
+    `EQ of Token.t (* "=" *)
+  | `BANGEQ of Token.t (* "!=" *)
+  | `LTGT of Token.t (* "<>" *)
+  | `LT of Token.t (* "<" *)
+  | `LTEQ of Token.t (* "<=" *)
+  | `GT of Token.t (* ">" *)
+  | `GTEQ of Token.t (* ">=" *)
+  | `Pat_like of pat_like
 ]
 [@@deriving sexp_of]
 
 type this = pat_this
+[@@deriving sexp_of]
+
+type super = pat_super
+[@@deriving sexp_of]
+
+type all_rows_clause = (pat_all * pat_rows)
+[@@deriving sexp_of]
+
+type variable_declarator_id = (identifier (*tok*) * dimensions option)
+[@@deriving sexp_of]
+
+type count_expression = (pat_count * Token.t (* "(" *) * Token.t (* ")" *))
+[@@deriving sexp_of]
+
+type update_type = [ `Pat_trac of pat_trac | `Pat_view_ of pat_view_ ]
+[@@deriving sexp_of]
+
+type set_comparison_operator = [
+    `Pat_in of pat_in
+  | `Pat_not_pat_in of (pat_not * pat_in)
+  | `Pat_inclus of pat_inclus
+  | `Pat_exclus of pat_exclus
+]
+[@@deriving sexp_of]
+
+type using_clause = (
+    pat_using * pat_list * Token.t (* "=" *) * identifier (*tok*)
+)
+[@@deriving sexp_of]
+
+type for_type = [
+    `Pat_update of pat_update
+  | `Pat_ref of pat_ref
+  | `Pat_view of pat_view
+]
 [@@deriving sexp_of]
 
 type dml_type = [
@@ -677,17 +723,17 @@ type dml_type = [
 ]
 [@@deriving sexp_of]
 
-type super = pat_super
+type null_literal = pat_null
 [@@deriving sexp_of]
 
-type value_comparison_operator = [
-    `EQ of Token.t (* "=" *)
-  | `BANGEQ of Token.t (* "!=" *)
-  | `LT of Token.t (* "<" *)
-  | `LTEQ of Token.t (* "<=" *)
-  | `GT of Token.t (* ">" *)
-  | `GTEQ of Token.t (* ">=" *)
-  | `Pat_like of pat_like
+type with_highlight = pat_high
+[@@deriving sexp_of]
+
+type with_data_cat_filter_type = [
+    `Pat_at of pat_at
+  | `Pat_above of pat_above
+  | `Pat_below of pat_below
+  | `Pat_above_or_below of pat_above_or_below
 ]
 [@@deriving sexp_of]
 
@@ -698,17 +744,21 @@ type fields_type = [
 ]
 [@@deriving sexp_of]
 
-type for_type = [
-    `Pat_update of pat_update
-  | `Pat_ref of pat_ref
-  | `Pat_view of pat_view
+type order_null_direciton = [
+    `Pat_nulls_pat_first of (pat_nulls * pat_first)
+  | `Pat_nulls_pat_last of (pat_nulls * pat_last)
 ]
 [@@deriving sexp_of]
 
-type null_literal = pat_null
-[@@deriving sexp_of]
-
-type void_type = pat_void
+type using_scope_type = [
+    `Pat_dele of pat_dele
+  | `Pat_ever of pat_ever
+  | `Pat_mine of pat_mine
+  | `Pat_mine_and_my_groups of pat_mine_and_my_groups
+  | `Pat_my_terr of pat_my_terr
+  | `Pat_my_team_terr of pat_my_team_terr
+  | `Pat_team of pat_team
+]
 [@@deriving sexp_of]
 
 type trigger_event = [
@@ -722,10 +772,7 @@ type trigger_event = [
 ]
 [@@deriving sexp_of]
 
-type order_direction = [ `Pat_asc of pat_asc | `Pat_desc of pat_desc ]
-[@@deriving sexp_of]
-
-type count_expression = (pat_count * Token.t (* "(" *) * Token.t (* ")" *))
+type void_type = pat_void
 [@@deriving sexp_of]
 
 type modifier = [
@@ -746,66 +793,7 @@ type modifier = [
 ]
 [@@deriving sexp_of]
 
-type all_rows_clause = (pat_all * pat_rows)
-[@@deriving sexp_of]
-
-type with_data_cat_filter_type = [
-    `Pat_at of pat_at
-  | `Pat_above of pat_above
-  | `Pat_below of pat_below
-  | `Pat_above_or_below of pat_above_or_below
-]
-[@@deriving sexp_of]
-
-type update_type = [ `Pat_trac of pat_trac | `Pat_view_ of pat_view_ ]
-[@@deriving sexp_of]
-
 type boolean = [ `Pat_true of pat_true | `Pat_false of pat_false ]
-[@@deriving sexp_of]
-
-type in_type = [
-    `Pat_all of pat_all
-  | `Pat_email of pat_email
-  | `Pat_name of pat_name
-  | `Pat_phone of pat_phone
-  | `Pat_side of pat_side
-]
-[@@deriving sexp_of]
-
-type variable_declarator_id = (identifier (*tok*) * dimensions option)
-[@@deriving sexp_of]
-
-type dotted_identifier = (
-    identifier (*tok*)
-  * (Token.t (* "." *) * identifier (*tok*)) list (* one or more *)
-)
-[@@deriving sexp_of]
-
-type inferred_parameters = (
-    Token.t (* "(" *)
-  * identifier (*tok*)
-  * (Token.t (* "," *) * identifier (*tok*)) list (* zero or more *)
-  * Token.t (* ")" *)
-)
-[@@deriving sexp_of]
-
-type name = [
-    `Id of identifier (*tok*)
-  | `Scoped_id of (name * Token.t (* "." *) * identifier (*tok*))
-]
-[@@deriving sexp_of]
-
-type using_clause = (
-    pat_using * pat_list * Token.t (* "=" *) * identifier (*tok*)
-)
-[@@deriving sexp_of]
-
-type set_comparison_operator = [
-    `Pat_in of pat_in
-  | `Pat_not_pat_in of (pat_not * pat_in)
-  | `Pat_inclus of pat_inclus
-  | `Pat_exclus of pat_exclus
-]
 [@@deriving sexp_of]
 
 type date_literal = [
@@ -835,7 +823,13 @@ type date_literal = [
 ]
 [@@deriving sexp_of]
 
-type with_highlight = pat_high
+type in_type = [
+    `Pat_all of pat_all
+  | `Pat_email of pat_email
+  | `Pat_name of pat_name
+  | `Pat_phone of pat_phone
+  | `Pat_side of pat_side
+]
 [@@deriving sexp_of]
 
 type function_name = [
@@ -865,48 +859,7 @@ type function_name = [
 ]
 [@@deriving sexp_of]
 
-type using_scope_type = [
-    `Pat_dele of pat_dele
-  | `Pat_ever of pat_ever
-  | `Pat_mine of pat_mine
-  | `Pat_mine_and_my_groups of pat_mine_and_my_groups
-  | `Pat_my_terr of pat_my_terr
-  | `Pat_my_team_terr of pat_my_team_terr
-  | `Pat_team of pat_team
-]
-[@@deriving sexp_of]
-
-type for_clause = (
-    pat_for
-  * for_type
-  * (Token.t (* "," *) * for_type) list (* zero or more *)
-)
-[@@deriving sexp_of]
-
-type update_clause = (
-    pat_update
-  * update_type
-  * (Token.t (* "," *) * update_type) list (* zero or more *)
-)
-[@@deriving sexp_of]
-
-type with_record_visibility_param = [
-    `Pat_maxd_EQ_int of (pat_maxd * Token.t (* "=" *) * int_ (*tok*))
-  | `Pat_suppos_EQ_bool of (pat_suppos * Token.t (* "=" *) * boolean)
-  | `Pat_suppos__EQ_bool of (pat_suppos_ * Token.t (* "=" *) * boolean)
-]
-[@@deriving sexp_of]
-
-type literal = [
-    `Int of int_ (*tok*)
-  | `Deci_floa_point_lit of decimal_floating_point_literal (*tok*)
-  | `Bool of boolean
-  | `Str_lit of string_literal (*tok*)
-  | `Null_lit of null_literal
-]
-[@@deriving sexp_of]
-
-type in_clause = (pat_in * in_type * pat_fields)
+type order_direction = [ `Pat_asc of pat_asc | `Pat_desc of pat_desc ]
 [@@deriving sexp_of]
 
 type anon_choice_id_73106c9 = [
@@ -929,6 +882,20 @@ type storage_identifier = [
 ]
 [@@deriving sexp_of]
 
+type update_clause = (
+    pat_update
+  * update_type
+  * (Token.t (* "," *) * update_type) list (* zero or more *)
+)
+[@@deriving sexp_of]
+
+type for_clause = (
+    pat_for
+  * for_type
+  * (Token.t (* "," *) * for_type) list (* zero or more *)
+)
+[@@deriving sexp_of]
+
 type with_data_cat_filter = (
     identifier (*tok*)
   * with_data_cat_filter_type
@@ -939,8 +906,28 @@ type with_data_cat_filter = (
 )
 [@@deriving sexp_of]
 
+type soql_using_clause = (pat_using * pat_scope * using_scope_type)
+[@@deriving sexp_of]
+
+type with_record_visibility_param = [
+    `Pat_maxd_EQ_int of (pat_maxd * Token.t (* "=" *) * int_ (*tok*))
+  | `Pat_suppos_EQ_bool of (pat_suppos * Token.t (* "=" *) * boolean)
+  | `Pat_suppos__EQ_bool of (pat_suppos_ * Token.t (* "=" *) * boolean)
+]
+[@@deriving sexp_of]
+
+type literal = [
+    `Int of int_ (*tok*)
+  | `Deci_floa_point_lit of decimal_floating_point_literal (*tok*)
+  | `Bool of boolean
+  | `Str_lit of string_literal (*tok*)
+  | `Null_lit of null_literal
+]
+[@@deriving sexp_of]
+
 type soql_literal = [
     `Int of int_ (*tok*)
+  | `Deci of decimal (*tok*)
   | `Str_lit of string_literal (*tok*)
   | `Date of date (*tok*)
   | `Date_time of date_time (*tok*)
@@ -954,7 +941,7 @@ type soql_literal = [
 ]
 [@@deriving sexp_of]
 
-type soql_using_clause = (pat_using * pat_scope * using_scope_type)
+type in_clause = (pat_in * in_type * pat_fields)
 [@@deriving sexp_of]
 
 type field_list = (
@@ -1111,6 +1098,7 @@ and binary_expression = [
   | `Exp_EQEQ_exp of (expression * Token.t (* "==" *) * expression)
   | `Exp_EQEQEQ_exp of (expression * Token.t (* "===" *) * expression)
   | `Exp_BANGEQ_exp of (expression * Token.t (* "!=" *) * expression)
+  | `Exp_LTGT_exp of (expression * Token.t (* "<>" *) * expression)
   | `Exp_BANGEQEQ_exp of (expression * Token.t (* "!==" *) * expression)
   | `Exp_AMPAMP_exp of (expression * Token.t (* "&&" *) * expression)
   | `Exp_BARBAR_exp of (expression * Token.t (* "||" *) * expression)
@@ -1256,14 +1244,14 @@ and declaration = [
 and dimensions_expr = (Token.t (* "[" *) * expression * Token.t (* "]" *))
 
 and dml_expression = [
-    `Dml_type_prim_exp of (dml_type * primary_expression)
-  | `Pat_upsert_prim_exp_opt_unan_type of (
+    `Dml_type_exp of (dml_type * expression)
+  | `Pat_upsert_exp_opt_unan_type of (
         pat_upsert
-      * primary_expression
+      * expression
       * unannotated_type option
     )
-  | `Pat_merge_prim_exp_id of (
-        pat_merge * primary_expression * identifier (*tok*)
+  | `Pat_merge_exp_SPACE_exp of (
+        pat_merge * expression * Token.t (* " " *) * expression
     )
 ]
 
@@ -1669,8 +1657,6 @@ and selected_fields = (
 
 and simple_type = [
     `Void_type of void_type
-  | `Inte_type of integral_type
-  | `Floa_point_type of floating_point_type
   | `Bool_type of Token.t (* "boolean" *)
   | `Id of identifier (*tok*)
   | `Scoped_type_id of scoped_type_identifier
@@ -1841,10 +1827,7 @@ and switch_label = (
             )
               list (* zero or more *)
         )
-      | `Lit_rep_COMMA_lit of (
-            literal
-          * (Token.t (* "," *) * literal) list (* zero or more *)
-        )
+      | `Exp_rep_COMMA_exp of anon_exp_rep_COMMA_exp_0bb260c
       | `Pat_else of pat_else
     ]
 )
@@ -1947,23 +1930,19 @@ type boolean_type (* inlined *) = Token.t (* "boolean" *)
 type term_separator_end (* inlined *) = Token.t (* "'" *)
 [@@deriving sexp_of]
 
+type apex_method_identifier (* inlined *) = (
+    identifier (*tok*) * Token.t (* "(" *) * Token.t (* ")" *)
+)
+[@@deriving sexp_of]
+
+type scoped_identifier (* inlined *) = (
+    name * Token.t (* "." *) * identifier (*tok*)
+)
+[@@deriving sexp_of]
+
 type with_user_id_type (* inlined *) = (
     pat_userid * Token.t (* "=" *) * string_literal (*tok*)
 )
-[@@deriving sexp_of]
-
-type comment (* inlined *) = [
-    `Line_comm_expl of line_comment_explicit (*tok*)
-  | `Blk_comm_expl of block_comment_explicit (*tok*)
-]
-[@@deriving sexp_of]
-
-type with_pricebook_expression (* inlined *) = (
-    pat_pric * Token.t (* "=" *) * string_literal (*tok*)
-)
-[@@deriving sexp_of]
-
-type dummy_alias0 (* inlined *) = block_comment (*tok*)
 [@@deriving sexp_of]
 
 type with_metadata_expression (* inlined *) = (
@@ -1971,8 +1950,8 @@ type with_metadata_expression (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type apex_method_identifier (* inlined *) = (
-    identifier (*tok*) * Token.t (* "(" *) * Token.t (* ")" *)
+type with_pricebook_expression (* inlined *) = (
+    pat_pric * Token.t (* "=" *) * string_literal (*tok*)
 )
 [@@deriving sexp_of]
 
@@ -1990,14 +1969,12 @@ type continue_statement (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type scoped_identifier (* inlined *) = (
-    name * Token.t (* "." *) * identifier (*tok*)
-)
-[@@deriving sexp_of]
-
 type date_literal_with_param (* inlined *) = (
     tok_choice_pat_last_n_days * Token.t (* ":" *) * int_ (*tok*)
 )
+[@@deriving sexp_of]
+
+type dummy_alias0 (* inlined *) = block_comment (*tok*)
 [@@deriving sexp_of]
 
 type with_snippet_expression (* inlined *) = (
@@ -2013,6 +1990,12 @@ type with_snippet_expression (* inlined *) = (
 type dummy_alias1 (* inlined *) = line_comment (*tok*)
 [@@deriving sexp_of]
 
+type comment (* inlined *) = [
+    `Line_comm_expl of line_comment_explicit (*tok*)
+  | `Blk_comm_expl of block_comment_explicit (*tok*)
+]
+[@@deriving sexp_of]
+
 type fields_expression (* inlined *) = (
     pat_fields * Token.t (* "(" *) * fields_type * Token.t (* ")" *)
 )
@@ -2020,16 +2003,6 @@ type fields_expression (* inlined *) = (
 
 type with_spell_correction_expression (* inlined *) = (
     pat_spell_corr * Token.t (* "=" *) * boolean
-)
-[@@deriving sexp_of]
-
-type with_record_visibility_expression (* inlined *) = (
-    pat_reco
-  * Token.t (* "(" *)
-  * with_record_visibility_param
-  * (Token.t (* "," *) * with_record_visibility_param)
-      list (* zero or more *)
-  * Token.t (* ")" *)
 )
 [@@deriving sexp_of]
 
@@ -2044,6 +2017,16 @@ type storage_alias (* inlined *) = (
     storage_identifier
   * pat_as option
   * identifier (*tok*)
+)
+[@@deriving sexp_of]
+
+type with_record_visibility_expression (* inlined *) = (
+    pat_reco
+  * Token.t (* "(" *)
+  * with_record_visibility_param
+  * (Token.t (* "," *) * with_record_visibility_param)
+      list (* zero or more *)
+  * Token.t (* ")" *)
 )
 [@@deriving sexp_of]
 
