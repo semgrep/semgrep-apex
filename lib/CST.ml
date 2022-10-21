@@ -83,10 +83,6 @@ type pat_over = Token.t (* pattern [oO][vV][eE][rR][rR][iI][dD][eE] *)
 type pat_tran = Token.t (* pattern [tT][rR][aA][nN][sS][iI][eE][nN][tT] *)
 [@@deriving sexp_of]
 
-type string_literal =
-  Token.t (* pattern "'(\\\\[nNrRtTbBfFuU\"'_%\\\\]|[^\\\\'])*'" *)
-[@@deriving sexp_of]
-
 type pat_this_month =
   Token.t (* pattern [tT][hH][iI][sS][__][mM][oO][nN][tT][hH] *)
 [@@deriving sexp_of]
@@ -104,6 +100,9 @@ type pat_mine_and_my_groups =
 
 type pat_day_in_month =
   Token.t (* pattern [dD][aA][yY][__][iI][nN][__][mM][oO][nN][tT][hH] *)
+[@@deriving sexp_of]
+
+type tok_choice_pat_last_n_days = Token.t
 [@@deriving sexp_of]
 
 type pat_order = Token.t (* pattern [oO][rR][dD][eE][rR] *)
@@ -125,9 +124,6 @@ type pat_inte = Token.t (* pattern [iI][nN][tT][eE][rR][fF][aA][cC][eE] *)
 [@@deriving sexp_of]
 
 type pat_static = Token.t (* pattern [sS][tT][aA][tT][iI][cC] *)
-[@@deriving sexp_of]
-
-type term = Token.t (* pattern "(\\\\\\'|[^'])+" *)
 [@@deriving sexp_of]
 
 type pat_divi = Token.t (* pattern [dD][iI][vV][iI][sS][iI][oO][nN] *)
@@ -235,9 +231,6 @@ type pat_super = Token.t (* pattern [sS][uU][pP][eE][rR] *)
 [@@deriving sexp_of]
 
 type pat_rows = Token.t (* pattern [rR][oO][wW][sS] *)
-[@@deriving sexp_of]
-
-type tok_choice_pat_last_n_days = Token.t
 [@@deriving sexp_of]
 
 type pat_retu = Token.t (* pattern [rR][eE][tT][uU][rR][nN][iI][nN][gG] *)
@@ -421,6 +414,10 @@ type pat_dele = Token.t (* pattern [dD][eE][lL][eE][gG][aA][tT][eE][dD] *)
 
 type pat_last_quar =
   Token.t (* pattern [lL][aA][sS][tT][__][qQ][uU][aA][rR][tT][eE][rR] *)
+[@@deriving sexp_of]
+
+type string_literal =
+  Token.t (* pattern "'(\\\\[nNrRtTbBfFuU\"'_%\\\\]|[^\\\\'])*'" *)
 [@@deriving sexp_of]
 
 type pat_cont = Token.t (* pattern [cC][oO][nN][tT][iI][nN][uU][eE] *)
@@ -642,6 +639,9 @@ type pat_cale_year =
 type pat_desc = Token.t (* pattern [dD][eE][sS][cC] *)
 [@@deriving sexp_of]
 
+type term = Token.t (* pattern "(\\\\\\'|[^'])+" *)
+[@@deriving sexp_of]
+
 type pat_do = Token.t (* pattern [dD][oO] *)
 [@@deriving sexp_of]
 
@@ -692,6 +692,13 @@ type variable_declarator_id = (identifier (*tok*) * dimensions option)
 type count_expression = (pat_count * Token.t (* "(" *) * Token.t (* ")" *))
 [@@deriving sexp_of]
 
+type break_statement = (
+    pat_brk
+  * identifier (*tok*) option
+  * Token.t (* ";" *)
+)
+[@@deriving sexp_of]
+
 type update_type = [ `Pat_trac of pat_trac | `Pat_view_ of pat_view_ ]
 [@@deriving sexp_of]
 
@@ -701,6 +708,13 @@ type set_comparison_operator = [
   | `Pat_inclus of pat_inclus
   | `Pat_exclus of pat_exclus
 ]
+[@@deriving sexp_of]
+
+type continue_statement = (
+    pat_cont
+  * identifier (*tok*) option
+  * Token.t (* ";" *)
+)
 [@@deriving sexp_of]
 
 type using_clause = (
@@ -870,13 +884,13 @@ type anon_choice_id_73106c9 = [
 ]
 [@@deriving sexp_of]
 
-type field_identifier = [
+type storage_identifier = [
     `Id of identifier (*tok*)
   | `Dotted_id of dotted_identifier
 ]
 [@@deriving sexp_of]
 
-type storage_identifier = [
+type field_identifier = [
     `Id of identifier (*tok*)
   | `Dotted_id of dotted_identifier
 ]
@@ -945,8 +959,8 @@ type in_clause = (pat_in * in_type * pat_fields)
 [@@deriving sexp_of]
 
 type field_list = (
-    field_identifier
-  * (Token.t (* "," *) * field_identifier) list (* zero or more *)
+    storage_identifier
+  * (Token.t (* "," *) * storage_identifier) list (* zero or more *)
 )
 [@@deriving sexp_of]
 
@@ -958,18 +972,18 @@ type with_data_cat_expression = (
 )
 [@@deriving sexp_of]
 
+type anon_choice_stor_id_355c95c = [
+    `Stor_id of storage_identifier
+  | `Stor_alias of (storage_identifier * pat_as option * identifier (*tok*))
+]
+[@@deriving sexp_of]
+
 type else_expression = (pat_else * field_list)
 [@@deriving sexp_of]
 
 type when_expression = (
     pat_when * identifier (*tok*) * pat_then * field_list
 )
-[@@deriving sexp_of]
-
-type anon_choice_stor_id_355c95c = [
-    `Stor_id of storage_identifier
-  | `Stor_alias of (storage_identifier * pat_as option * identifier (*tok*))
-]
 [@@deriving sexp_of]
 
 type soql_with_type = [
@@ -1080,6 +1094,19 @@ and array_access = (
     primary_expression * Token.t (* "[" *) * expression * Token.t (* "]" *)
 )
 
+and array_creation_expression = (
+    pat_new
+  * simple_type
+  * [
+        `Rep1_dimens_expr_opt_dimens of (
+            dimensions_expr list (* one or more *)
+          * dimensions option
+        )
+      | `Dimens_array_init of (dimensions * array_initializer)
+      | `Array_init of array_initializer
+    ]
+)
+
 and array_initializer = (
     Token.t (* "{" *)
   * (
@@ -1166,11 +1193,7 @@ and class_body_declaration = [
   | `Enum_decl of enum_declaration
   | `Blk of trigger_body
   | `Static_init of (pat_static * trigger_body)
-  | `Cons_decl of (
-        modifiers option
-      * constructor_declarator
-      * constructor_body
-    )
+  | `Cons_decl of constructor_declaration
   | `SEMI of Token.t (* ";" *)
 ]
 
@@ -1183,6 +1206,8 @@ and class_declaration = (
   * interfaces option
   * class_body
 )
+
+and class_literal = (unannotated_type * Token.t (* "." *) * pat_class)
 
 and comparison = [
     `Value_comp of (value_comparison_operator * anon_choice_soql_lit_3019e24)
@@ -1216,6 +1241,12 @@ and constructor_body = (
   * explicit_constructor_invocation option
   * statement list (* zero or more *)
   * Token.t (* "}" *)
+)
+
+and constructor_declaration = (
+    modifiers option
+  * constructor_declarator
+  * constructor_body
 )
 
 and constructor_declarator = (
@@ -1255,6 +1286,11 @@ and dml_expression = [
     )
 ]
 
+and do_statement = (
+    pat_do * statement * pat_while * parenthesized_expression
+  * Token.t (* ";" *)
+)
+
 and element_value = [
     `Exp of expression
   | `Elem_value_array_init of (
@@ -1269,6 +1305,18 @@ and element_value = [
     )
   | `Anno of annotation
 ]
+
+and enhanced_for_statement = (
+    pat_for
+  * Token.t (* "(" *)
+  * modifiers option
+  * unannotated_type
+  * variable_declarator_id
+  * Token.t (* ":" *)
+  * expression
+  * Token.t (* ")" *)
+  * statement
+)
 
 and enum_body = (
     Token.t (* "{" *)
@@ -1344,6 +1392,8 @@ and expression = [
   | `Switch_exp of switch_expression
 ]
 
+and expression_statement = (expression * Token.t (* ";" *))
+
 and extends_interfaces = (pat_extends * type_list)
 
 and field_access = (
@@ -1365,11 +1415,27 @@ and find_clause = (
     ]
 )
 
-and formal_parameter = (
-    modifiers option
-  * unannotated_type
-  * variable_declarator_id
+and for_statement = (
+    pat_for
+  * Token.t (* "(" *)
+  * [
+        `Local_var_decl of local_variable_declaration
+      | `Opt_exp_rep_COMMA_exp_SEMI of (
+            anon_exp_rep_COMMA_exp_0bb260c option
+          * Token.t (* ";" *)
+        )
+    ]
+  * expression option
+  * Token.t (* ";" *)
+  * anon_exp_rep_COMMA_exp_0bb260c option
+  * Token.t (* ")" *)
+  * statement
 )
+
+and formal_parameter = [
+    `Opt_modifs_unan_type_var_decl_id of catch_formal_parameter
+  | `Semg_ellips of Token.t (* "..." *)
+]
 
 and formal_parameters = (
     Token.t (* "(" *)
@@ -1473,6 +1539,13 @@ and having_condition_expression = [
   | `Having_comp_exp of (function_expression * having_comparison)
 ]
 
+and if_statement = (
+    pat_if
+  * parenthesized_expression
+  * statement
+  * (pat_else * statement) option
+)
+
 and interface_body = (
     Token.t (* "{" *)
   * [
@@ -1498,6 +1571,8 @@ and interface_declaration = (
 
 and interfaces = (pat_imples * type_list)
 
+and labeled_statement = (identifier (*tok*) * Token.t (* ":" *) * statement)
+
 and limit_clause = (pat_limit * anon_choice_int_1466488)
 
 and local_variable_declaration = (
@@ -1506,6 +1581,8 @@ and local_variable_declaration = (
   * variable_declarator_list
   * Token.t (* ";" *)
 )
+
+and map_creation_expression = (pat_new * simple_type * map_initializer)
 
 and map_initializer = (
     Token.t (* "{" *)
@@ -1537,8 +1614,24 @@ and method_header = (
   * method_declarator
 )
 
+and method_invocation = (
+    [
+        `Id of identifier (*tok*)
+      | `Choice_prim_exp_prop_navi_opt_super_prop_navi_opt_type_args_id of (
+            anon_choice_prim_exp_bbf4eda
+          * property_navigation
+          * (super * property_navigation) option
+          * type_arguments option
+          * identifier (*tok*)
+        )
+    ]
+  * argument_list
+)
+
 and modifiers =
   [ `Anno of annotation | `Modi of modifier ] list (* one or more *)
+
+and object_creation_expression = unqualified_object_creation_expression
 
 and offset_clause = (pat_offset * anon_choice_int_1466488)
 
@@ -1560,59 +1653,41 @@ and parenthesized_expression = (
 )
 
 and primary_expression = [
-    `Lit of literal
-  | `Class_lit of (unannotated_type * Token.t (* "." *) * pat_class)
-  | `This of this
-  | `Id of identifier (*tok*)
-  | `Paren_exp of parenthesized_expression
-  | `Obj_crea_exp of (
-        pat_new
-      * type_arguments option
-      * simple_type
-      * argument_list
-      * class_body option
-    )
-  | `Field_access of field_access
-  | `Array_access of array_access
-  | `Meth_invo of (
-        [
-            `Id of identifier (*tok*)
-          | `Choice_prim_exp_prop_navi_opt_super_prop_navi_opt_type_args_id of (
-                anon_choice_prim_exp_bbf4eda
-              * property_navigation
-              * (super * property_navigation) option
-              * type_arguments option
-              * identifier (*tok*)
-            )
-        ]
-      * argument_list
-    )
-  | `Array_crea_exp of (
-        pat_new
-      * simple_type
-      * [
-            `Rep1_dimens_expr_opt_dimens of (
-                dimensions_expr list (* one or more *)
-              * dimensions option
-            )
-          | `Dimens_array_init of (dimensions * array_initializer)
-          | `Array_init of array_initializer
-        ]
-    )
-  | `Map_crea_exp of (pat_new * simple_type * map_initializer)
-  | `Query_exp of (
-        Token.t (* "[" *)
-      * [ `Soql_query of soql_query | `Sosl_query of sosl_query ]
-      * Token.t (* "]" *)
-    )
+    `Choice_lit of [
+        `Lit of literal
+      | `Class_lit of class_literal
+      | `This of this
+      | `Id of identifier (*tok*)
+      | `Paren_exp of parenthesized_expression
+      | `Obj_crea_exp of object_creation_expression
+      | `Field_access of field_access
+      | `Array_access of array_access
+      | `Meth_invo of method_invocation
+      | `Array_crea_exp of array_creation_expression
+      | `Map_crea_exp of map_creation_expression
+      | `Query_exp of query_expression
+    ]
+  | `Semg_ellips of Token.t (* "..." *)
 ]
 
+and query_expression = (
+    Token.t (* "[" *)
+  * [ `Soql_query of soql_query | `Sosl_query of sosl_query ]
+  * Token.t (* "]" *)
+)
+
 and query_expression_ = sosl_query_body
+
+and return_statement = (pat_ret * expression option * Token.t (* ";" *))
 
 and returning_clause = (
     pat_retu
   * sobject_return
   * (Token.t (* "," *) * sobject_return) list (* zero or more *)
+)
+
+and run_as_statement = (
+    pat_e8c36c5 * parenthesized_expression * trigger_body
 )
 
 and scoped_type_identifier = (
@@ -1737,67 +1812,27 @@ and sosl_with_type = [
 ]
 
 and statement = [
-    `Decl of declaration
-  | `Exp_stmt of (expression * Token.t (* ";" *))
-  | `Labe_stmt of (identifier (*tok*) * Token.t (* ":" *) * statement)
-  | `If_stmt of (
-        pat_if
-      * parenthesized_expression
-      * statement
-      * (pat_else * statement) option
-    )
-  | `While_stmt of (pat_while * parenthesized_expression * statement)
-  | `For_stmt of (
-        pat_for
-      * Token.t (* "(" *)
-      * [
-            `Local_var_decl of local_variable_declaration
-          | `Opt_exp_rep_COMMA_exp_SEMI of (
-                anon_exp_rep_COMMA_exp_0bb260c option
-              * Token.t (* ";" *)
-            )
-        ]
-      * expression option
-      * Token.t (* ";" *)
-      * anon_exp_rep_COMMA_exp_0bb260c option
-      * Token.t (* ")" *)
-      * statement
-    )
-  | `Enha_for_stmt of (
-        pat_for
-      * Token.t (* "(" *)
-      * modifiers option
-      * unannotated_type
-      * variable_declarator_id
-      * Token.t (* ":" *)
-      * expression
-      * Token.t (* ")" *)
-      * statement
-    )
-  | `Blk of trigger_body
-  | `SEMI of Token.t (* ";" *)
-  | `Do_stmt of (
-        pat_do * statement * pat_while * parenthesized_expression
-      * Token.t (* ";" *)
-    )
-  | `Brk_stmt of (pat_brk * identifier (*tok*) option * Token.t (* ";" *))
-  | `Cont_stmt of (pat_cont * identifier (*tok*) option * Token.t (* ";" *))
-  | `Ret_stmt of (pat_ret * expression option * Token.t (* ";" *))
-  | `Switch_exp of switch_expression
-  | `Local_var_decl of local_variable_declaration
-  | `Throw_stmt of (pat_throw * expression * Token.t (* ";" *))
-  | `Try_stmt of (
-        pat_try
-      * trigger_body
-      * [
-            `Rep1_catch_clause of catch_clause list (* one or more *)
-          | `Rep_catch_clause_fina_clause of (
-                catch_clause list (* zero or more *)
-              * finally_clause
-            )
-        ]
-    )
-  | `Run_as_stmt of (pat_e8c36c5 * parenthesized_expression * trigger_body)
+    `Choice_decl of [
+        `Decl of declaration
+      | `Exp_stmt of expression_statement
+      | `Labe_stmt of labeled_statement
+      | `If_stmt of if_statement
+      | `While_stmt of while_statement
+      | `For_stmt of for_statement
+      | `Enha_for_stmt of enhanced_for_statement
+      | `Blk of trigger_body
+      | `SEMI of Token.t (* ";" *)
+      | `Do_stmt of do_statement
+      | `Brk_stmt of break_statement
+      | `Cont_stmt of continue_statement
+      | `Ret_stmt of return_statement
+      | `Switch_exp of switch_expression
+      | `Local_var_decl of local_variable_declaration
+      | `Throw_stmt of throw_statement
+      | `Try_stmt of try_statement
+      | `Run_as_stmt of run_as_statement
+    ]
+  | `Semg_ellips of Token.t (* "..." *)
 ]
 
 and subquery = (
@@ -1834,7 +1869,21 @@ and switch_label = (
 
 and switch_rule = (switch_label * trigger_body)
 
+and throw_statement = (pat_throw * expression * Token.t (* ";" *))
+
 and trigger_body = block
+
+and try_statement = (
+    pat_try
+  * trigger_body
+  * [
+        `Rep1_catch_clause of catch_clause list (* one or more *)
+      | `Rep_catch_clause_fina_clause of (
+            catch_clause list (* zero or more *)
+          * finally_clause
+        )
+    ]
+)
 
 and type_ = [
     `Unan_type of unannotated_type
@@ -1916,18 +1965,27 @@ and variable_initializer = [
 ]
 
 and where_clause = (pat_where * boolean_expression)
+
+and while_statement = (pat_while * parenthesized_expression * statement)
 [@@deriving sexp_of]
 
-type parser_output = declaration list (* zero or more *)
+type parser_output = [
+    `Rep_stmt of statement list (* zero or more *)
+  | `Cons_decl of constructor_declaration
+  | `Exp of expression
+]
 [@@deriving sexp_of]
 
-type term_separator_start (* inlined *) = Token.t (* "'" *)
+type term_separator_end (* inlined *) = Token.t (* "'" *)
+[@@deriving sexp_of]
+
+type semgrep_ellipsis (* inlined *) = Token.t (* "..." *)
 [@@deriving sexp_of]
 
 type boolean_type (* inlined *) = Token.t (* "boolean" *)
 [@@deriving sexp_of]
 
-type term_separator_end (* inlined *) = Token.t (* "'" *)
+type term_separator_start (* inlined *) = Token.t (* "'" *)
 [@@deriving sexp_of]
 
 type apex_method_identifier (* inlined *) = (
@@ -1940,8 +1998,8 @@ type scoped_identifier (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type with_user_id_type (* inlined *) = (
-    pat_userid * Token.t (* "=" *) * string_literal (*tok*)
+type with_pricebook_expression (* inlined *) = (
+    pat_pric * Token.t (* "=" *) * string_literal (*tok*)
 )
 [@@deriving sexp_of]
 
@@ -1950,22 +2008,8 @@ type with_metadata_expression (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type with_pricebook_expression (* inlined *) = (
-    pat_pric * Token.t (* "=" *) * string_literal (*tok*)
-)
-[@@deriving sexp_of]
-
-type break_statement (* inlined *) = (
-    pat_brk
-  * identifier (*tok*) option
-  * Token.t (* ";" *)
-)
-[@@deriving sexp_of]
-
-type continue_statement (* inlined *) = (
-    pat_cont
-  * identifier (*tok*) option
-  * Token.t (* ";" *)
+type with_user_id_type (* inlined *) = (
+    pat_userid * Token.t (* "=" *) * string_literal (*tok*)
 )
 [@@deriving sexp_of]
 
@@ -2058,20 +2102,6 @@ type annotated_type (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type array_creation_expression (* inlined *) = (
-    pat_new
-  * simple_type
-  * [
-        `Rep1_dimens_expr_opt_dimens of (
-            dimensions_expr list (* one or more *)
-          * dimensions option
-        )
-      | `Dimens_array_init of (dimensions * array_initializer)
-      | `Array_init of array_initializer
-    ]
-)
-[@@deriving sexp_of]
-
 type array_type (* inlined *) = (unannotated_type * dimensions)
 [@@deriving sexp_of]
 
@@ -2104,25 +2134,7 @@ type cast_expression (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type class_literal (* inlined *) = (
-    unannotated_type * Token.t (* "." *) * pat_class
-)
-[@@deriving sexp_of]
-
 type comparison_expression (* inlined *) = (value_expression * comparison)
-[@@deriving sexp_of]
-
-type constructor_declaration (* inlined *) = (
-    modifiers option
-  * constructor_declarator
-  * constructor_body
-)
-[@@deriving sexp_of]
-
-type do_statement (* inlined *) = (
-    pat_do * statement * pat_while * parenthesized_expression
-  * Token.t (* ";" *)
-)
 [@@deriving sexp_of]
 
 type element_value_array_initializer (* inlined *) = (
@@ -2137,45 +2149,11 @@ type element_value_array_initializer (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type enhanced_for_statement (* inlined *) = (
-    pat_for
-  * Token.t (* "(" *)
-  * modifiers option
-  * unannotated_type
-  * variable_declarator_id
-  * Token.t (* ":" *)
-  * expression
-  * Token.t (* ")" *)
-  * statement
-)
-[@@deriving sexp_of]
-
-type expression_statement (* inlined *) = (expression * Token.t (* ";" *))
-[@@deriving sexp_of]
-
 type field_declaration (* inlined *) = (
     modifiers option
   * unannotated_type
   * variable_declarator_list
   * [ `Acce_list of accessor_list | `SEMI of Token.t (* ";" *) ]
-)
-[@@deriving sexp_of]
-
-type for_statement (* inlined *) = (
-    pat_for
-  * Token.t (* "(" *)
-  * [
-        `Local_var_decl of local_variable_declaration
-      | `Opt_exp_rep_COMMA_exp_SEMI of (
-            anon_exp_rep_COMMA_exp_0bb260c option
-          * Token.t (* ";" *)
-        )
-    ]
-  * expression option
-  * Token.t (* ";" *)
-  * anon_exp_rep_COMMA_exp_0bb260c option
-  * Token.t (* ")" *)
-  * statement
 )
 [@@deriving sexp_of]
 
@@ -2216,71 +2194,15 @@ type having_value_comparison (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type if_statement (* inlined *) = (
-    pat_if
-  * parenthesized_expression
-  * statement
-  * (pat_else * statement) option
-)
-[@@deriving sexp_of]
-
 type instanceof_expression (* inlined *) = (expression * pat_inst * type_)
-[@@deriving sexp_of]
-
-type labeled_statement (* inlined *) = (
-    identifier (*tok*) * Token.t (* ":" *) * statement
-)
-[@@deriving sexp_of]
-
-type map_creation_expression (* inlined *) = (
-    pat_new * simple_type * map_initializer
-)
-[@@deriving sexp_of]
-
-type method_invocation (* inlined *) = (
-    [
-        `Id of identifier (*tok*)
-      | `Choice_prim_exp_prop_navi_opt_super_prop_navi_opt_type_args_id of (
-            anon_choice_prim_exp_bbf4eda
-          * property_navigation
-          * (super * property_navigation) option
-          * type_arguments option
-          * identifier (*tok*)
-        )
-    ]
-  * argument_list
-)
 [@@deriving sexp_of]
 
 type not_expression (* inlined *) = (pat_not * condition_expression)
 [@@deriving sexp_of]
 
-type object_creation_expression (* inlined *) =
-  unqualified_object_creation_expression
-[@@deriving sexp_of]
-
 type or_expression (* inlined *) = (
     condition_expression
   * (pat_or * condition_expression) list (* one or more *)
-)
-[@@deriving sexp_of]
-
-type query_expression (* inlined *) = (
-    Token.t (* "[" *)
-  * [ `Soql_query of soql_query | `Sosl_query of sosl_query ]
-  * Token.t (* "]" *)
-)
-[@@deriving sexp_of]
-
-type return_statement (* inlined *) = (
-    pat_ret
-  * expression option
-  * Token.t (* ";" *)
-)
-[@@deriving sexp_of]
-
-type run_as_statement (* inlined *) = (
-    pat_e8c36c5 * parenthesized_expression * trigger_body
 )
 [@@deriving sexp_of]
 
@@ -2304,11 +2226,6 @@ type ternary_expression (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type throw_statement (* inlined *) = (
-    pat_throw * expression * Token.t (* ";" *)
-)
-[@@deriving sexp_of]
-
 type trigger_declaration (* inlined *) = (
     pat_trig
   * identifier (*tok*)
@@ -2322,26 +2239,8 @@ type trigger_declaration (* inlined *) = (
 )
 [@@deriving sexp_of]
 
-type try_statement (* inlined *) = (
-    pat_try
-  * trigger_body
-  * [
-        `Rep1_catch_clause of catch_clause list (* one or more *)
-      | `Rep_catch_clause_fina_clause of (
-            catch_clause list (* zero or more *)
-          * finally_clause
-        )
-    ]
-)
-[@@deriving sexp_of]
-
 type value_comparison (* inlined *) = (
     value_comparison_operator * anon_choice_soql_lit_3019e24
-)
-[@@deriving sexp_of]
-
-type while_statement (* inlined *) = (
-    pat_while * parenthesized_expression * statement
 )
 [@@deriving sexp_of]
 
