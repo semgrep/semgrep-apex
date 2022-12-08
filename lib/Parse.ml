@@ -1346,7 +1346,7 @@ let children_regexps : (string * Run.exp option) list = [
   "condition_expression",
   Some (
     Alt [|
-      Token (Name "identifier");
+      Token (Name "semgrep_metavar");
       Alt [|
         Seq [
           Token (Literal "(");
@@ -6490,8 +6490,8 @@ and trans_condition_expression ((kind, body) : mt) : CST.condition_expression =
   | Children v ->
       (match v with
       | Alt (0, v) ->
-          `Id (
-            trans_identifier (Run.matcher_token v)
+          `Semg_meta (
+            trans_semgrep_metavar (Run.matcher_token v)
           )
       | Alt (1, v) ->
           `Choice_LPAR_bool_exp_RPAR (

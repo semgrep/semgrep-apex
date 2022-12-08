@@ -1633,7 +1633,8 @@ and map_comparison_expression (env : env) ((v1, v2) : CST.comparison_expression)
 
 and map_condition_expression (env : env) (x : CST.condition_expression) =
   (match x with
-  | `Id x -> map_identifier env x
+  | `Semg_meta tok ->
+      (* pattern \$[A-Z_][A-Z_0-9]* *) token env tok
   | `Choice_LPAR_bool_exp_RPAR x ->
       (match x with
       | `LPAR_bool_exp_RPAR (v1, v2, v3) ->

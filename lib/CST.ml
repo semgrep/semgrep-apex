@@ -1246,7 +1246,7 @@ and comparison = [
 and comparison_expression = (value_expression * comparison)
 
 and condition_expression = [
-    `Id of identifier
+    `Semg_meta of semgrep_metavar (*tok*)
   | `Choice_LPAR_bool_exp_RPAR of [
         `LPAR_bool_exp_RPAR of (
             Token.t (* "(" *) * boolean_expression * Token.t (* ")" *)

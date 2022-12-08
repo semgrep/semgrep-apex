@@ -30,6 +30,7 @@ module.exports = grammar(base_grammar, {
     [$.argument_list, $.formal_parameter]
   ]),
 
+  // This is the so-called "word token". It must be a terminal symbol.
   // Originally: $.identifier
   word: ($) => $._apex_identifier,
 
@@ -237,8 +238,15 @@ module.exports = grammar(base_grammar, {
     ),
 
     // WHERE $A
+    // This is what requires 'identifier' to be a choice between
+    // the terminals 'semgrep_metavar' and '_apex_identifier' such that
+    // the tokenizer prefers the former. Without this, it would not
+    // see 'semgrep_metavar' here but an ordinary identifier
+    // (the original 'identifier' that we renamed '_apex_identifier'),
+    // interpreting the '$A' in 'WHERE $A' incorrectly and causing a syntax
+    // error.
     _condition_expression: ($, previous) => choice(
-      $.identifier,
+      $.semgrep_metavar,
       previous
     )
   }
