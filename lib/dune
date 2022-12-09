@@ -1,5 +1,5 @@
 (library
-  (public_name tree-sitter-lang.apex)
+  (public_name tree-sitter-lang-pro.apex)
   (name tree_sitter_apex)
   (preprocess (pps ppx_sexp_conv))
   (libraries atdgen-runtime tree-sitter.run)
