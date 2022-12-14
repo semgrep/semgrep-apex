@@ -1813,14 +1813,18 @@ and map_enum_body (env : env) ((v1, v2, v3) : CST.enum_body) =
   let v3 = (* "}" *) token env v3 in
   todo env (v1, v2, v3)
 
-and map_enum_constant (env : env) ((v1, v2) : CST.enum_constant) =
-  let v1 =
-    (match v1 with
-    | Some x -> map_modifiers env x
-    | None -> todo env ())
-  in
-  let v2 = map_identifier env v2 in
-  todo env (v1, v2)
+and map_enum_constant (env : env) (x : CST.enum_constant) =
+  (match x with
+  | `Semg_ellips tok -> (* "..." *) token env tok
+  | `Opt_modifs_id (v1, v2) ->
+      let v1 =
+        (match v1 with
+        | Some x -> map_modifiers env x
+        | None -> todo env ())
+      in
+      let v2 = map_identifier env v2 in
+      todo env (v1, v2)
+  )
 
 and map_enum_declaration (env : env) ((v1, v2, v3, v4, v5) : CST.enum_declaration) =
   let v1 =
@@ -3072,6 +3076,8 @@ let map_parser_output (env : env) (x : CST.parser_output) =
   | `Cons_decl x -> map_constructor_declaration env x
   | `Exp x -> map_expression env x
   | `Anno x -> map_annotation env x
+  | `Meth_decl x -> map_method_declaration env x
+  | `Local_var_decl x -> map_local_variable_declaration env x
   | `Class_header x -> map_class_header env x
   | `Full_meth_header (v1, v2) ->
       let v1 =

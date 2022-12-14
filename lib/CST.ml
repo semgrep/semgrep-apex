@@ -1354,7 +1354,10 @@ and enum_body = (
   * Token.t (* "}" *)
 )
 
-and enum_constant = (modifiers option * identifier)
+and enum_constant = [
+    `Semg_ellips of Token.t (* "..." *)
+  | `Opt_modifs_id of (modifiers option * identifier)
+]
 
 and enum_declaration = (
     modifiers option
@@ -2017,6 +2020,8 @@ type parser_output = [
   | `Cons_decl of constructor_declaration
   | `Exp of expression
   | `Anno of annotation
+  | `Meth_decl of method_declaration
+  | `Local_var_decl of local_variable_declaration
   | `Class_header of class_header
   | `Full_meth_header of (modifiers option * method_header)
   | `Part_if of (pat_if * parenthesized_expression)

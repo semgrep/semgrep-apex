@@ -42,7 +42,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/sosl/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: de275bf353c79d0ed0d4ba034562e33435e6be3a
+Latest commit in repo: b08b0a65904901885c073f695e3cd99e399768d1
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -54,7 +54,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/soql/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: de275bf353c79d0ed0d4ba034562e33435e6be3a
+Latest commit in repo: b08b0a65904901885c073f695e3cd99e399768d1
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -66,11 +66,11 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/apex/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: de275bf353c79d0ed0d4ba034562e33435e6be3a
+Latest commit in repo: b08b0a65904901885c073f695e3cd99e399768d1
 Last change in file:
-  commit 0d4ec638aaff78ba93fa52e9d6c776aa974c485f
+  commit b08b0a65904901885c073f695e3cd99e399768d1
   Author: Martin Jambon <martin@r2c.dev>
-  Date:   Mon Dec 12 17:13:57 2022 -0800
+  Date:   Tue Dec 13 23:24:15 2022 -0800
   
-      Give good names to partial constructs and improve tests
+      Add support for ellipsis in enums
 ---

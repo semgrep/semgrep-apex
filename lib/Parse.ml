@@ -1515,12 +1515,15 @@ let children_regexps : (string * Run.exp option) list = [
   );
   "enum_constant",
   Some (
-    Seq [
-      Opt (
-        Token (Name "modifiers");
-      );
-      Token (Name "identifier");
-    ];
+    Alt [|
+      Token (Name "semgrep_ellipsis");
+      Seq [
+        Opt (
+          Token (Name "modifiers");
+        );
+        Token (Name "identifier");
+      ];
+    |];
   );
   "enum_declaration",
   Some (
@@ -2911,6 +2914,8 @@ let children_regexps : (string * Run.exp option) list = [
       Token (Name "constructor_declaration");
       Token (Name "expression");
       Token (Name "annotation");
+      Token (Name "method_declaration");
+      Token (Name "local_variable_declaration");
       Token (Name "class_header");
       Token (Name "full_method_header");
       Token (Name "partial_if");
@@ -6822,13 +6827,23 @@ and trans_enum_constant ((kind, body) : mt) : CST.enum_constant =
   match body with
   | Children v ->
       (match v with
-      | Seq [v0; v1] ->
-          (
-            Run.opt
-              (fun v -> trans_modifiers (Run.matcher_token v))
-              v0
-            ,
-            trans_identifier (Run.matcher_token v1)
+      | Alt (0, v) ->
+          `Semg_ellips (
+            trans_semgrep_ellipsis (Run.matcher_token v)
+          )
+      | Alt (1, v) ->
+          `Opt_modifs_id (
+            (match v with
+            | Seq [v0; v1] ->
+                (
+                  Run.opt
+                    (fun v -> trans_modifiers (Run.matcher_token v))
+                    v0
+                  ,
+                  trans_identifier (Run.matcher_token v1)
+                )
+            | _ -> assert false
+            )
           )
       | _ -> assert false
       )
@@ -9800,26 +9815,34 @@ let trans_parser_output ((kind, body) : mt) : CST.parser_output =
             trans_annotation (Run.matcher_token v)
           )
       | Alt (4, v) ->
+          `Meth_decl (
+            trans_method_declaration (Run.matcher_token v)
+          )
+      | Alt (5, v) ->
+          `Local_var_decl (
+            trans_local_variable_declaration (Run.matcher_token v)
+          )
+      | Alt (6, v) ->
           `Class_header (
             trans_class_header (Run.matcher_token v)
           )
-      | Alt (5, v) ->
+      | Alt (7, v) ->
           `Full_meth_header (
             trans_full_method_header (Run.matcher_token v)
           )
-      | Alt (6, v) ->
+      | Alt (8, v) ->
           `Part_if (
             trans_partial_if (Run.matcher_token v)
           )
-      | Alt (7, v) ->
+      | Alt (9, v) ->
           `Part_try (
             trans_partial_try (Run.matcher_token v)
           )
-      | Alt (8, v) ->
+      | Alt (10, v) ->
           `Part_catch (
             trans_partial_catch (Run.matcher_token v)
           )
-      | Alt (9, v) ->
+      | Alt (11, v) ->
           `Part_fina (
             trans_partial_finally (Run.matcher_token v)
           )
