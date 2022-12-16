@@ -1052,7 +1052,10 @@ and annotation_argument_list = (
   * Token.t (* ")" *)
 )
 
-and annotation_key_value = (identifier * Token.t (* "=" *) * element_value)
+and annotation_key_value = [
+    `Semg_ellips of Token.t (* "..." *)
+  | `Id_EQ_elem_value of (identifier * Token.t (* "=" *) * element_value)
+]
 
 and anon_LPAR_choice_soql_lit_rep_COMMA_choice_soql_lit_RPAR_bea6d78 = (
     Token.t (* "(" *)
@@ -1910,7 +1913,10 @@ and switch_label = (
     ]
 )
 
-and switch_rule = (switch_label * trigger_body)
+and switch_rule = [
+    `Semg_ellips of Token.t (* "..." *)
+  | `Switch_label_blk of (switch_label * trigger_body)
+]
 
 and throw_statement = (pat_throw * expression * Token.t (* ";" *))
 

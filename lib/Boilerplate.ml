@@ -1237,11 +1237,15 @@ and map_annotation_argument_list (env : env) ((v1, v2, v3) : CST.annotation_argu
   let v3 = (* ")" *) token env v3 in
   todo env (v1, v2, v3)
 
-and map_annotation_key_value (env : env) ((v1, v2, v3) : CST.annotation_key_value) =
-  let v1 = map_identifier env v1 in
-  let v2 = (* "=" *) token env v2 in
-  let v3 = map_element_value env v3 in
-  todo env (v1, v2, v3)
+and map_annotation_key_value (env : env) (x : CST.annotation_key_value) =
+  (match x with
+  | `Semg_ellips tok -> (* "..." *) token env tok
+  | `Id_EQ_elem_value (v1, v2, v3) ->
+      let v1 = map_identifier env v1 in
+      let v2 = (* "=" *) token env v2 in
+      let v3 = map_element_value env v3 in
+      todo env (v1, v2, v3)
+  )
 
 and map_anon_LPAR_choice_soql_lit_rep_COMMA_choice_soql_lit_RPAR_bea6d78 (env : env) ((v1, v2, v3, v4) : CST.anon_LPAR_choice_soql_lit_rep_COMMA_choice_soql_lit_RPAR_bea6d78) =
   let v1 = (* "(" *) token env v1 in
@@ -2861,10 +2865,14 @@ and map_switch_label (env : env) ((v1, v2) : CST.switch_label) =
   in
   todo env (v1, v2)
 
-and map_switch_rule (env : env) ((v1, v2) : CST.switch_rule) =
-  let v1 = map_switch_label env v1 in
-  let v2 = map_trigger_body env v2 in
-  todo env (v1, v2)
+and map_switch_rule (env : env) (x : CST.switch_rule) =
+  (match x with
+  | `Semg_ellips tok -> (* "..." *) token env tok
+  | `Switch_label_blk (v1, v2) ->
+      let v1 = map_switch_label env v1 in
+      let v2 = map_trigger_body env v2 in
+      todo env (v1, v2)
+  )
 
 and map_throw_statement (env : env) ((v1, v2, v3) : CST.throw_statement) =
   let v1 = map_pat_throw env v1 in

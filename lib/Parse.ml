@@ -972,11 +972,14 @@ let children_regexps : (string * Run.exp option) list = [
   );
   "annotation_key_value",
   Some (
-    Seq [
-      Token (Name "identifier");
-      Token (Literal "=");
-      Token (Name "element_value");
-    ];
+    Alt [|
+      Token (Name "semgrep_ellipsis");
+      Seq [
+        Token (Name "identifier");
+        Token (Literal "=");
+        Token (Name "element_value");
+      ];
+    |];
   );
   "argument_list",
   Some (
@@ -2588,10 +2591,13 @@ let children_regexps : (string * Run.exp option) list = [
   );
   "switch_rule",
   Some (
-    Seq [
-      Token (Name "switch_label");
-      Token (Name "block");
-    ];
+    Alt [|
+      Token (Name "semgrep_ellipsis");
+      Seq [
+        Token (Name "switch_label");
+        Token (Name "block");
+      ];
+    |];
   );
   "ternary_expression",
   Some (
@@ -5642,11 +5648,21 @@ and trans_annotation_key_value ((kind, body) : mt) : CST.annotation_key_value =
   match body with
   | Children v ->
       (match v with
-      | Seq [v0; v1; v2] ->
-          (
-            trans_identifier (Run.matcher_token v0),
-            Run.trans_token (Run.matcher_token v1),
-            trans_element_value (Run.matcher_token v2)
+      | Alt (0, v) ->
+          `Semg_ellips (
+            trans_semgrep_ellipsis (Run.matcher_token v)
+          )
+      | Alt (1, v) ->
+          `Id_EQ_elem_value (
+            (match v with
+            | Seq [v0; v1; v2] ->
+                (
+                  trans_identifier (Run.matcher_token v0),
+                  Run.trans_token (Run.matcher_token v1),
+                  trans_element_value (Run.matcher_token v2)
+                )
+            | _ -> assert false
+            )
           )
       | _ -> assert false
       )
@@ -9114,10 +9130,20 @@ and trans_switch_rule ((kind, body) : mt) : CST.switch_rule =
   match body with
   | Children v ->
       (match v with
-      | Seq [v0; v1] ->
-          (
-            trans_switch_label (Run.matcher_token v0),
-            trans_block (Run.matcher_token v1)
+      | Alt (0, v) ->
+          `Semg_ellips (
+            trans_semgrep_ellipsis (Run.matcher_token v)
+          )
+      | Alt (1, v) ->
+          `Switch_label_blk (
+            (match v with
+            | Seq [v0; v1] ->
+                (
+                  trans_switch_label (Run.matcher_token v0),
+                  trans_block (Run.matcher_token v1)
+                )
+            | _ -> assert false
+            )
           )
       | _ -> assert false
       )
