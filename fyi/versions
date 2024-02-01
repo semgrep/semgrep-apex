@@ -42,7 +42,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/sosl/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 93ee446ced8b1fa4bb63af0a0f12cce72ad4cbb0
+Latest commit in repo: 70933949d998337f15a2663e417864c87c8714ef
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -54,7 +54,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/soql/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 93ee446ced8b1fa4bb63af0a0f12cce72ad4cbb0
+Latest commit in repo: 70933949d998337f15a2663e417864c87c8714ef
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -66,7 +66,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/apex/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 93ee446ced8b1fa4bb63af0a0f12cce72ad4cbb0
+Latest commit in repo: 70933949d998337f15a2663e417864c87c8714ef
 Last change in file:
   commit 97c49da0e0c8365f7aa8c5353db836f2b77d713f
   Author: Martin Jambon <martin@r2c.dev>
