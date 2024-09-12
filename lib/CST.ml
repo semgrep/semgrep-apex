@@ -2017,3 +2017,10 @@ type default_value (* inlined *) = (Token.t (* "default" *) * element_value)
 type partial_if (* inlined *) = (pat_if * parenthesized_expression)
 
 type partial_try (* inlined *) = (pat_try * trigger_body)
+
+type extra = 
+    Line_comment of Loc.t * line_comment
+  | Block_comment of Loc.t * block_comment
+
+
+type extras = extra list
