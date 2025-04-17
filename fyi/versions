@@ -2,47 +2,45 @@ File: semgrep-grammars/src/tree-sitter-sfapex/LICENSE
 Git repo name: tree-sitter-sfapex
 Latest commit in repo: d6871791ff314ef6598b4bc609dae658abfffbc9
 Last change in file:
-  commit a69484e0fc4f737c890ec18d94d07e5f1b6f29f4
+  commit d6871791ff314ef6598b4bc609dae658abfffbc9
   Author: Anthony Heber <anthony.heber@gmail.com>
-  Date:   Wed Sep 28 20:01:40 2022 -0600
+  Date:   Sat Oct 15 01:03:15 2022 -0600
   
-      Getting ready for initial release
+      Update WASM binaries
 ---
 File: semgrep-grammars/src/tree-sitter-sfapex/sosl/grammar.js
 Git repo name: tree-sitter-sfapex
 Latest commit in repo: d6871791ff314ef6598b4bc609dae658abfffbc9
 Last change in file:
-  commit 9c6c6298cd5dd52227007ed15ad2525f52afa3b6
+  commit d6871791ff314ef6598b4bc609dae658abfffbc9
   Author: Anthony Heber <anthony.heber@gmail.com>
-  Date:   Wed Aug 24 12:52:05 2022 -0600
+  Date:   Sat Oct 15 01:03:15 2022 -0600
   
-      Initial Commit - parse and highlight
+      Update WASM binaries
 ---
 File: semgrep-grammars/src/tree-sitter-sfapex/soql/grammar.js
 Git repo name: tree-sitter-sfapex
 Latest commit in repo: d6871791ff314ef6598b4bc609dae658abfffbc9
 Last change in file:
-  commit 9c6c6298cd5dd52227007ed15ad2525f52afa3b6
+  commit d6871791ff314ef6598b4bc609dae658abfffbc9
   Author: Anthony Heber <anthony.heber@gmail.com>
-  Date:   Wed Aug 24 12:52:05 2022 -0600
+  Date:   Sat Oct 15 01:03:15 2022 -0600
   
-      Initial Commit - parse and highlight
+      Update WASM binaries
 ---
 File: semgrep-grammars/src/tree-sitter-sfapex/apex/grammar.js
 Git repo name: tree-sitter-sfapex
 Latest commit in repo: d6871791ff314ef6598b4bc609dae658abfffbc9
 Last change in file:
-  commit 17d7fd4b1f6f26225ee3b9ab6c5717aff2a7c974
+  commit d6871791ff314ef6598b4bc609dae658abfffbc9
   Author: Anthony Heber <anthony.heber@gmail.com>
-  Date:   Sat Oct 15 00:56:44 2022 -0600
+  Date:   Sat Oct 15 01:03:15 2022 -0600
   
-      v0.0.8
-      
-      Fix parsing bugs and cleanup package
+      Update WASM binaries
 ---
 File: semgrep-grammars/src/semgrep-sfapex/sosl/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 62c59803ce966ac00210b5ed8aa163a926f7eaad
+Latest commit in repo: 8553ec9cc3560f4d4cbc617eeac980655c18cdf0
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -54,7 +52,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/soql/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 62c59803ce966ac00210b5ed8aa163a926f7eaad
+Latest commit in repo: 8553ec9cc3560f4d4cbc617eeac980655c18cdf0
 Last change in file:
   commit 447163c709ac5cce8780c7ee4a873c69b533c167
   Author: Martin Jambon <martin@r2c.dev>
@@ -66,7 +64,7 @@ Last change in file:
 ---
 File: semgrep-grammars/src/semgrep-sfapex/apex/grammar.js
 Git repo name: ocaml-tree-sitter-semgrep
-Latest commit in repo: 62c59803ce966ac00210b5ed8aa163a926f7eaad
+Latest commit in repo: 8553ec9cc3560f4d4cbc617eeac980655c18cdf0
 Last change in file:
   commit 97c49da0e0c8365f7aa8c5353db836f2b77d713f
   Author: Martin Jambon <martin@r2c.dev>
